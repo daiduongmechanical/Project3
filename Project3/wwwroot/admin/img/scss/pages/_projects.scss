@@ -1,0 +1,26 @@
+//
+// Pages: Projects
+//
+
+.Projects {
+  td {
+    vertical-align: middle;
+  }
+
+  .list-inline {
+    margin-bottom: 0;
+  }
+
+  // table avatar
+  img.table-avatar,
+  .table-avatar img {
+    border-radius: 50%;
+    display: inline;
+    width: 2.5rem;
+  }
+
+  // Project state
+  .Project-state {
+    text-align: center;
+  }
+}

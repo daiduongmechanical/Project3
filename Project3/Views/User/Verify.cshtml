@@ -1,0 +1,37 @@
+﻿@model int
+@if (ViewData.ContainsKey("error"))
+{
+    <p class="alert alert-warning" role="alert">@ViewData["error"]</p>
+}
+
+@if (ViewData.ContainsKey("verify"))
+{
+    <p class="alert alert-warning" role="alert">@ViewData["verify"]</p>
+}
+
+<form action="~/verify/@Model" method="post">
+    <input name="code" type="text" />
+    <input name="device_id" type="hidden" id="device"/>
+    <button type="submit">submit</button>
+
+</form>
+<script>
+    // Initialize the agent at application startup.
+    const fpPromise = import('https://openfpcdn.io/fingerprintjs/v4')
+        .then(FingerprintJS => FingerprintJS.load())
+
+    // Get the visitor identifier when you need it.
+    fpPromise
+        .then(fp => fp.get())
+        .then(result => {
+            // This is the visitor identifier:
+            const visitorId = result.visitorId;
+            const data = document.getElementById('device').value = visitorId
+
+
+
+        })
+        .catch(error => {
+            return error
+        });
+</script>

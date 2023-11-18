@@ -1,0 +1,100 @@
+﻿@using Newtonsoft.Json;
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment env
+@{
+    List<DialDto> item;
+    var filePath = $"{env.WebRootPath}/json/dial.json";
+    using (StreamReader r = new StreamReader(filePath))
+    {
+        string json = r.ReadToEnd();
+        item = JsonConvert.DeserializeObject<List<DialDto>>(json);
+    }
+}
+@model LoginDto
+    <div class="login-box" style="margin:auto">
+      
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+            <div class="login-logo">
+                <h2 style="text-transform:uppercase" class="mb-2">login</h2>
+            </div>
+
+                <form asp-action="Login" asp-controller="User" method="post" class="mb-3">
+                <label>Phone number</label>
+                    <div class="input-group mb-3">
+                        <select asp-for="Head" class="form-control" style="max-height:30vh ; border: blue solid 0.5px">
+                            @foreach (var i in item)
+                            {
+                                var c = $"{i.name}  {i.dial_code}";
+                                <option value="@i.dial_code">@c</option>
+                            }
+                        </select>
+                        <input asp-for="Phone" class="form-control" placeholder="Phone Number" style="border: blue solid 0.5px">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-phone"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Head" class="text-danger mb-2"></span>
+                    <span asp-validation-for="Phone" class="text-danger mb-2"></span>
+                <label>Password</label>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" asp-for="Password" placeholder="Password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+  
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger mb-2"></span>
+
+                    <input type="hidden"  asp-for="Device_id" id="device">
+                    <div class="row">
+                   
+                        <!-- /.col -->
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
+
+               
+                <!-- /.social-auth-links -->
+
+                <p class="mb-2">
+                    <a href="forgot-password.html">I forgot my password</a>
+                </p>
+                <p class="mb-2">
+                    <a asp-action="Register" class="text-center">Register a new membership</a>
+                </p>
+            </div>
+            <!-- /.login-card-body -->
+        </div>
+    </div>
+  
+
+    <script>
+        // Initialize the agent at application startup.
+        const fpPromise = import('https://openfpcdn.io/fingerprintjs/v4')
+            .then(FingerprintJS => FingerprintJS.load())
+
+        // Get the visitor identifier when you need it.
+        fpPromise
+            .then(fp => fp.get())
+            .then(result => {
+                // This is the visitor identifier:
+                const visitorId = result.visitorId;
+                const data = document.getElementById('device').value = visitorId
+               
+
+
+            })
+            .catch(error => {
+                return error
+            });
+    </script>
+
+

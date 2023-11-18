@@ -1,0 +1,106 @@
+﻿@model RegisterDto
+@using Newtonsoft.Json;
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment env
+@{
+    List<DialDto> item;
+    var filePath = $"{env.WebRootPath}/json/dial.json";
+    using (StreamReader r = new StreamReader(filePath))
+    {
+        string json = r.ReadToEnd();
+      item= JsonConvert.DeserializeObject<List<DialDto>>(json);
+    }
+    }
+    <div class="register-box" style="margin:auto">
+      
+        @if (ViewData.ContainsKey("error"))
+        {
+            <p class="alert alert-warning" role="alert">@ViewData["error"]</p>
+        }
+
+        <div class="card">
+            <div class="card-body register-card-body">
+            <div class="register-logo">
+                <h2 style="text-transform:uppercase" class="">Register</h2>
+            </div>
+
+                <form asp-action="Register" method="post">
+                    <label>User name</label>
+                    <div class="input-group mb-3">
+                        <input type="text" asp-for="Name" class="form-control" placeholder="User name">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger "></span>
+                <label>Phone Number</label>
+                    <div class="input-group mb-3">
+                        <select asp-for="Head" class="form-control" style="max-height:30vh ; border: blue solid 0.5px">
+                            @foreach (var i in item)
+                            {
+                                var c = $"{i.name}  {i.dial_code}";
+                                <option value="@i.dial_code">@c</option>
+                            }
+                        </select>
+                        <input asp-for="Phone" class="form-control" placeholder="Phone Number" style="border: blue solid 0.5px">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-phone"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                 
+                    <span asp-validation-for="Phone" class="text-danger "></span>
+
+                <label>Password</label>
+                    <div class="input-group mb-3">
+                        <input type="password" asp-for="Pass" class="form-control" placeholder="Password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Pass" class="text-danger mb-2"></span>
+                <label>Confirm password</label>
+                    <div class="input-group mb-3">
+                        <input type="password" asp-for="ConfirmPassword" class="form-control" placeholder="Retype password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger mb-2"></span>
+                    <div class="row">
+                        <div class="col-8">
+                       
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
+
+              @*   <div class="social-auth-links text-center">
+                    <p>- OR -</p>
+                    <a href="#" class="btn btn-block btn-primary">
+                        <i class="fab fa-facebook mr-2"></i>
+                        Sign up using Facebook
+                    </a>
+                    <a href="#" class="btn btn-block btn-danger">
+                        <i class="fab fa-google-plus mr-2"></i>
+                        Sign up using Google+
+                    </a>
+                </div> *@
+
+                <a asp-action="Login" class="text-center">I already have a membership</a>
+            </div>
+            <!-- /.form-box -->
+        </div><!-- /.card -->
+    </div>
+
