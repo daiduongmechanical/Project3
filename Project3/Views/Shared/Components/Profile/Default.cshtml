@@ -1,0 +1,175 @@
+﻿@using Newtonsoft.Json
+@{
+    var user = Model.User as User;
+    var check = User.FindFirst("id").Value == user.Id.ToString() ? "" : "readonly";
+    var hidden = User.FindFirst("id").Value == user.Id.ToString() ? "submit" : "hidden";
+    var id= @User.FindFirst("id").Value;
+    string formattedDate = user.Dob.ToString("yyyy-MM-dd");
+    var hobi = Model.Hobbies;
+    var jsonServerData = @Html.Raw(JsonConvert.SerializeObject(hobi));
+    var idJs = @Html.Raw(JsonConvert.SerializeObject(id));
+
+}
+
+<div class="card">
+    <div class="card-body" style="padding-top:0">
+        <h5 class="card-header"> <b>Infomation</b></h5>
+        <form asp-action="UpdateInfo" asp-controller="Profile" method="post">
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <h6 class="mb-0"> Date of birdth</h6>
+            </div>
+            <div class="col-sm-9 text-secondary">
+                    <input type="date" name="dob" class="form-control" value="@formattedDate" @check />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <h6 class="mb-0">Email Address</h6>
+            </div>
+            <div class="col-sm-9 text-secondary">
+                    <input type="email" name="mail" class="form-control" value="@user.Email" @check />
+            </div>
+            
+        </div>
+            <input type="hidden" name="id" class="form-control" value="@id" >
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <h6 class="mb-0">Phone</h6>
+            </div>
+            <div class="col-sm-9 text-secondary">
+                    <input type="text" name="phone" class="form-control" value="@user.Phone" @check />
+            </div>
+        </div>
+
+
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <h6 class="mb-0">Address</h6>
+            </div>
+            <div class="col-sm-9 text-secondary">
+                    <input type="text" name="address" class="form-control" value="@user.Address" @check />
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-9 text-secondary">
+                <input type=@hidden class="btn btn-primary px-4" value="Save Changes">
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding-top:0">
+        <div class="d-flex align-items-center justify-content-between">
+            <h5 class="card-header "><b>Hobbies</b> </h5>
+            <span class="text-blue " id="btn-add-hobbie" style="margin-left:auto; cursor:pointer"> + Add hobbiet</span>
+
+        </div>
+      
+
+
+      
+            <form method="post"  asp-action="UpdateHobbies" asp-controller="Profile" >
+                <input type="hidden" class="form-control" name="id" value="@User.FindFirst("id").Value">
+                <section id="form-hobbie">
+                @if (user.Hobbies != null)
+                {
+            @foreach(var i in user.Hobbies)
+            {
+
+                <div class="row mb-3">
+                      
+                    <div class="col-sm-3">
+                                <h6 class="mb-0 type-hobbie">@i.TypeHobbie.Name</h6>
+                            <input type="hidden" class="form-control " name="type[]" value="@i.TypeId">
+                    </div>
+                    <div class="col-sm-9 text-secondary d-flex align-items-center">
+                                <input type="text" class="form-control mr-2 " name="detail[]" value="@i.detai" @check>
+                            <i class="fas fa-trash " onclick="handle(event)"  style="cursor:pointer"></i>
+                    </div>
+                </div>
+                  
+            }
+                }
+                </section>
+                    <input type=@hidden class="btn btn-primary px-4" value="Save Changes">
+              
+            </form>
+            
+         
+      
+
+       
+        
+
+    </div>
+</div>
+
+<script>
+    let hobi = JSON.parse('@jsonServerData');
+    let id = JSON.parse('@idJs');
+    let form = document.getElementById("form-hobbie");
+    let btnAdd = document.getElementById("btn-add-hobbie");
+
+    //hanedel delete
+
+    let handle = (e) => {
+        e.target.parentElement.parentElement.remove();
+    }
+
+
+
+
+
+    //handle select
+    let lap = () => {
+        let check = [];
+        let select = document.querySelectorAll('.type-hobbie');
+        
+        select.forEach(x => {
+            if (x.localName == "select") {
+                check.push(x.options[x.selectedIndex].text)
+            } else {
+                check.push(x.innerHTML)
+            }
+           
+            
+        })
+        
+        let x = hobi.map(data => {
+            if (!check.includes(data.Name)) {
+                return `<option value=${data.Id}>${data.Name}</option>`
+            }
+
+        });
+        return x.join(' ')
+    }
+
+   
+
+    btnAdd.addEventListener('click', i => {
+      
+        let newDiv = document.createElement("div");
+        newDiv.innerHTML = ` <div class="row mb-3">
+                                            <input type="hidden" class="form-control" name="id" value=${id}  >
+                                    <div class="col-sm-3">
+                                                <select class="type-hobbie" name="type[]">`+
+                                        lap() 
+                                    + `</select>          
+                                    </div>
+                                    <div class="col-sm-9 text-secondary d-flex align-items-center">
+                                            <input type="text" class="form-control mr-2" name="detail[]" >
+                                               <i class="fas fa-trash " onclick="handle(event)" style="cursor:pointer"></i>
+                                    </div>
+                                </div>`
+     
+        form.appendChild(newDiv)
+    })
+    
+</script>
+

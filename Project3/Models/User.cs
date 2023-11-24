@@ -12,25 +12,33 @@ namespace Project3.Models
         public string? Password { get; set; }
         [EmailAddress]
         public string? Email { get; set; }
+
+        public string? Description { get; set; }
+        public string? Avatar { get; set; }
+
         public DateTime Dob { get; set; }
+        public string? Address { get; set; }
+
         public bool Verified { get; set; }
         [Required]
         [RegularExpression("/\\(?([0 - 9]{3})\\)? ([ .-]?) ([0 - 9]{3})\\2([0 - 9]{ 4})/")]
-        
+
         public string? Phone { get; set; }
-        public string? Avatar { get; set; }
-
         public ICollection<UserRole>? Roles { get; }
-        public ICollection<Device>? Devices { get;}
+        public ICollection<Device>? Devices { get; }
+        public ICollection<Friend> Friends{ get; }
 
-        public User() { }
+        public List<Hobbie> Hobbies { get; }
         public User(RegisterDto data) {
             UserName = data.Name;
             Password= BCrypt.Net.BCrypt.HashPassword(data.Pass);
             Phone = $"{data.Head}{data.Phone}";
             Verified = false;
+            Avatar = "default.jpg";
         }
+        public User() { }
+        
 
-    }
+        }
     
 }

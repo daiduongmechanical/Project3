@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project3.Data;
 
@@ -11,9 +12,11 @@ using Project3.Data;
 namespace Project3.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231120095853_v6")]
+    partial class v6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,39 +56,6 @@ namespace Project3.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Devices");
-                });
-
-            modelBuilder.Entity("Project3.Models.Friend", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RecieveId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SendId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Friends");
                 });
 
             modelBuilder.Entity("Project3.Models.Hobbie", b =>
@@ -278,13 +248,6 @@ namespace Project3.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project3.Models.Friend", b =>
-                {
-                    b.HasOne("Project3.Models.User", null)
-                        .WithMany("Friends")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("Project3.Models.Hobbie", b =>
                 {
                     b.HasOne("Project3.Models.TypeHobbie", "TypeHobbie")
@@ -322,8 +285,6 @@ namespace Project3.Migrations
             modelBuilder.Entity("Project3.Models.User", b =>
                 {
                     b.Navigation("Devices");
-
-                    b.Navigation("Friends");
 
                     b.Navigation("Hobbies");
 

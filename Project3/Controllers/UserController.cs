@@ -16,6 +16,7 @@ using System.Numerics;
 using Newtonsoft.Json;
 using Project3.Mail;
 using Twilio.TwiML.Messaging;
+using YamlDotNet.Core.Tokens;
 
 namespace Project3.Controllers
 {
@@ -27,28 +28,75 @@ namespace Project3.Controllers
         {
             _mail=mail;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("ResendPhone/{id}")]
+        public async Task<IActionResult> ReSendPone(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                TempData["verify"] = "Your account doesn't exist please checking again";
+                return RedirectToAction("verify", new { id = id });
+            }
+
+            var code = new Verified()
+            {
+                UserId = id
+            };
+
+           await _context.AddAsync(code);
+           await _context.SaveChangesAsync();
+
+            this.SendMessage(user.Phone, code.Code);
+            TempData["success"] = "Code send to your number. Please click again if not recieve code ";
+            return RedirectToAction("verify", new { id = id });
+        }
+
+        [HttpGet]
         [AllowAnonymous]
         [Route("verifyMail/{id}")]
         public async Task<IActionResult> VerifyMail(int id)
         {
-            var email =await _context.Users.FindAsync(id);
-            if (email.Email == null)
+            var email = await _context.Users.FindAsync(id);
+            if (email == null)
             {
-                TempData["verify"] = "Your account doesn't contain an email address"; 
+                TempData["verify"] = "Your account doesn't exist please checking again";
                 return RedirectToAction("verify", new { id = id });
             }
-            
-            var Code =new Verified() { UserId=id };
+
+            if (email.Email == null)
+            {
+                TempData["verify"] = "Your account doesn't contain an email address";
+                return RedirectToAction("verify", new { id = id });
+            }
+
+            var Code = new Verified() { UserId = id };
             _context.verifieds.Add(Code);
             await _context.SaveChangesAsync();
-            var message = new MailData() {
+            var message = new MailData()
+            {
                 EmailTo = email.Email,
                 EmailSubject = "confirm your account",
-                EmailBody = $"Your active code is : <b>{Code.Code}</b>"
+                EmailBody = $"Your active code is : {Code.Code}"
             };
-            TempData["verify"] = "Verify code was sent to your email. please checking agin. remember this code just survie in 10 minute";
-            return RedirectToAction("verify", new { id = id });
+            var check = _mail.SendMail(message);
+           if(check) {
 
+                TempData["verify"] = "Verify code was sent to your email. please checking agin. remember this code just survie in 10 minute";
+                return RedirectToAction("verify", new { id = id });
+            }
+            TempData["error"] = "have error occur. please contect to support";
+            return RedirectToAction("verify", new { id = id });
 
         }
 
@@ -58,6 +106,7 @@ namespace Project3.Controllers
         {
             BaseMethod.ConvertTempData(TempData, ViewData, "error");
             BaseMethod.ConvertTempData(TempData, ViewData, "verify");
+            BaseMethod.ConvertTempData(TempData, ViewData, "success");
 
             return View("Verify", id);
         }
@@ -66,7 +115,6 @@ namespace Project3.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Verify(int id,string code,string device_id)
         {
-           
             var check = _context.verifieds.FirstOrDefault(v => v.UserId == id && v.Code == code && v.IsLife==true );
             if (check==null)
             {
@@ -96,6 +144,7 @@ namespace Project3.Controllers
 
         }
 
+     
 
 
      
@@ -140,6 +189,7 @@ namespace Project3.Controllers
                 {
                     UserId = user.Id,
                 };
+             
                await _context.AddAsync(code);
                await _context.SaveChangesAsync();
 
@@ -173,9 +223,10 @@ namespace Project3.Controllers
             {
                 //check phone correct
                 var check = await _context.Users.Where(u => u.Phone == $"{data.Head}{data.Phone}")
-                    .Include(u => u.Roles)
+                    .Include(u => u.Roles).ThenInclude(UserRole => UserRole.Role)
                     .Include(u => u.Devices)
                     .FirstOrDefaultAsync();
+
                 if (check == null)
                 {
                     ViewData["Error"] = "Tên đăng nhập hoặc mật khẩu không đúng vui lòng kiểm tra lại";
@@ -197,9 +248,10 @@ namespace Project3.Controllers
                     return RedirectToAction("Verify", new { id = check.Id });
                 } else
                 {
+
                     await this.Handle(check, data.Device_id);
-                return RedirectToAction("Index", "Home");
-            } 
+                    return RedirectToAction("Index", "Home");
+                } 
             }
             return View("Login");
         }
@@ -225,15 +277,18 @@ namespace Project3.Controllers
                 }
             }
 
+          
+
             var claims = new List<Claim>();
 
             claims.Add(new Claim(ClaimTypes.NameIdentifier, check.UserName));
             claims.Add(new Claim("id", check.Id.ToString()));
-            if (check.Roles != null)
+			claims.Add(new Claim("avatar", check.Avatar));
+			if (check.Roles != null)
             {
                 foreach (var i in check.Roles)
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, i.Role.RoleName));
+                    claims.Add(new Claim(ClaimTypes.Role,i.Role.RoleName));
                 };
             }
 
@@ -249,9 +304,8 @@ namespace Project3.Controllers
         public void SendMessage(string phone,string code)
         {
             var accountSid = "ACc0caca8533ac9ab66cabf5bf31e6cd3c";
-            var authToken = "26cd9836151d7fd1d98f0ff65f7bc717";
+            var authToken = "57eb1aac0aaa5093de32433ec8fb1072";
             TwilioClient.Init(accountSid, authToken);
-
             var message = MessageResource.Create(
             body: $"Your verify code : {code}",
             from: new Twilio.Types.PhoneNumber("+13348010639"),

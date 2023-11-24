@@ -45,8 +45,12 @@ namespace Project3.Shared
 
         public static bool DeleteFile(string Name)
         {
+            if (Name == "default.jpg") {
+                return true;
+            }
             string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", $"{Name}");
             FileInfo fileInfo = new(path);
+
             if (fileInfo.Exists)
             {
                 fileInfo.Delete();

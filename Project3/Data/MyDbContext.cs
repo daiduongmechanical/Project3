@@ -12,6 +12,10 @@ namespace Project3.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<Device> Devices { get; set; }
         public DbSet<Verified> verifieds {get;set;}
+        public DbSet<TypeHobbie> TypeHobbies { get; set; }
+        public DbSet<Hobbie> Hobbies { get; set; }
+		public DbSet<Friend> Friends { get; set; }
 
-    }
+
+	}
 }

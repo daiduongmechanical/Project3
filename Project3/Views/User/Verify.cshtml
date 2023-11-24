@@ -1,20 +1,152 @@
 ﻿@model int
-@if (ViewData.ContainsKey("error"))
-{
-    <p class="alert alert-warning" role="alert">@ViewData["error"]</p>
-}
 
-@if (ViewData.ContainsKey("verify"))
-{
-    <p class="alert alert-warning" role="alert">@ViewData["verify"]</p>
-}
+<style>
+    #wrapper {
+        font-family: Lato;
+        font-size: 1.5rem;
+        text-align: center;
+        box-sizing: border-box;
+        color: #333;
+        #dialog
 
-<form action="~/verify/@Model" method="post">
-    <input name="code" type="text" />
-    <input name="device_id" type="hidden" id="device"/>
-    <button type="submit">submit</button>
+    {
+        border: solid 1px #ccc;
+        margin: 10px auto;
+        padding: 20px 30px;
+        display: inline-block;
+        box-shadow: 0 0 4px #ccc;
+        background-color: #FAF8F8;
+        overflow: hidden;
+        position: relative;
+        max-width: fit-content;
+        h3
 
-</form>
+    {
+        margin: 0 0 10px;
+        padding: 0;
+        line-height: 1.25;
+    }
+
+    span {
+        font-size: 90%;
+    }
+
+    #form {
+        max-width: 240px;
+        margin: 25px auto 0;
+        input
+
+    {
+        margin: 0 5px;
+        text-align: center;
+        line-height: 80px;
+        font-size: 50px;
+        border: solid 1px #ccc;
+        box-shadow: 0 0 5px #ccc inset;
+        outline: none;
+        width: 20%;
+        transition: all .2s ease-in-out;
+        border-radius: 3px;
+        &:focus
+
+    {
+        border-color: purple;
+        box-shadow: 0 0 5px purple inset;
+    }
+
+    &::selection {
+        background: transparent;
+    }
+
+    }
+
+    button {
+        margin: 30px 0 50px;
+        width: 100%;
+        padding: 6px;
+        background-color: #B85FC6;
+        border: none;
+        text-transform: uppercase;
+    }
+
+    }
+
+    button {
+        &.close
+
+    {
+        border: solid 2px;
+        border-radius: 30px;
+        line-height: 19px;
+        font-size: 120%;
+        width: 22px;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+    }
+
+    }
+
+    div {
+        position: relative;
+        z-index: 1;
+    }
+
+    img {
+        position: absolute;
+        bottom: -70px;
+        right: -63px;
+    }
+
+    }
+    }
+</style>
+
+
+<div id="wrapper">
+    <div id="dialog">
+        @if (ViewData.ContainsKey("verify"))
+        {
+            <p class="alert alert-warning" role="alert">@ViewData["verify"]</p>
+        }
+        @if (ViewData.ContainsKey("error"))
+        {
+            <p class="alert alert-warning" role="alert">@ViewData["error"]</p>
+        }
+        @if (ViewData.ContainsKey("success"))
+        {
+            <p class="alert alert-success" role="alert">@ViewData["success"]</p>
+        }
+        <h2 class="mb-2">Verify your account</h2>
+        <p>This code just exist in 10 minutes. if over time please click to resend code</p>
+        
+        <div id="form">
+            <form action="~/verify/@Model" method="post">
+                <input type="text" style="text-align: center" maxLength="1" size="1" id="c1" />
+                <input type="text" style="text-align: center" maxLength="1" size="1" id="c2" />
+                <input type="text" style="text-align: center" maxLength="1" size="1" id="c3" />
+                <input type="text" style="text-align: center" maxLength="1" size="1" id="c4" />
+                <input type="text" style="text-align: center" maxLength="1" size="1" id="c5" />
+                <input type="text" style="text-align: center" maxLength="1" size="1" id="c6" />
+                <input name="device_id" type="hidden" id="device"/>
+                <input type=hidden name="code" id="code_hiden"/>
+                <button type="submit" class="btn btn-primary btn-embossed">Verify</button>
+
+            </form> 
+            
+        </div>
+
+        <div class="mt-4">
+            if you Didn't receive the code?<br />
+            <a href="/resendphone/@Model">
+                <button  class="btn btn-primary mt-3">Send again to your phone</button>
+            </a><br />
+            <a href="/verifyMail/@Model"> <button class="btn btn-danger mt-3">Send again to your Email</button></a>
+        </div>
+      
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
     // Initialize the agent at application startup.
     const fpPromise = import('https://openfpcdn.io/fingerprintjs/v4')
@@ -34,4 +166,61 @@
         .catch(error => {
             return error
         });
-</script>
+
+    $(function () {
+        'use strict';
+
+        var body = $('body');
+
+        function goToNextInput(e) {
+            var key = e.which,
+                t = $(e.target),
+                sib = t.next('input');
+            let code1 = $("#c1").val();
+            let code2 = $("#c2").val();
+            let code3 = $("#c3").val();
+            let code4 = $("#c4").val();
+            let code5 = $("#c5").val();
+            let code6 = $("#c6").val();
+            $("#code_hiden").val(`${code1}${code2}${code3}${code4}${code5}${code6}`)
+
+
+
+            if (key === 9) {
+                return true;
+            }
+
+            if (!sib || !sib.length) {
+                sib = body.find('input').eq(0);
+            }
+            sib.select().focus();
+        }
+
+        function onKeyDown(e) {
+
+            var key = e.which;
+
+
+            if (key === 9 || (key >= 48 && key <= 90)) {
+                return true;
+            }
+
+            e.preventDefault();
+            return false;
+        }
+
+        function onFocus(e) {
+            $(e.target).select();
+        }
+
+        body.on('keyup', 'input', goToNextInput);
+        body.on('keydown', 'input', onKeyDown);
+        body.on('click', 'input', onFocus);
+
+    })
+
+    
+
+
+
+  </script>

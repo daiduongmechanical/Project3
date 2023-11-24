@@ -26,8 +26,6 @@ namespace Project3.Mail
                    
                     emailMessage.To.Add(MailboxAddress.Parse(mailData.EmailTo));
 
-                    emailMessage.Cc.Add(new MailboxAddress("Cc Receiver", "cc@example.com"));
-                    emailMessage.Bcc.Add(new MailboxAddress("Bcc Receiver", "bcc@example.com"));
 
                     emailMessage.Subject = mailData.EmailSubject;
 
@@ -39,7 +37,7 @@ namespace Project3.Mail
                     using (var mailClient = new SmtpClient())
                     {
                         mailClient.Connect(_mailSettings.Server, _mailSettings.Port, MailKit.Security.SecureSocketOptions.StartTls);
-                        mailClient.Authenticate(_mailSettings.UserName, _mailSettings.Password);
+                        mailClient.Authenticate(_mailSettings.SenderEmail, _mailSettings.Password);
                         mailClient.Send(emailMessage);
                         mailClient.Disconnect(true);
                     }
@@ -49,7 +47,7 @@ namespace Project3.Mail
             }
             catch (Exception ex)
             {
-                // Exception Details
+
                 return false;
             }
         }

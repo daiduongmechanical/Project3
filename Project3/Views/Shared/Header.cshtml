@@ -1,55 +1,61 @@
 ﻿@using System.Security.Claims;
-<header class="bg bg-warning">
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="index.html"><h2>Host <em>Cloud</em></h2></a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="index.html">
-                            Home
-                            <span class="sr-only">(current)</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="about.html">Chat</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="services.html">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="contact.html">About Us</a>
-                    </li>
-                </ul>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-warning" style="position:fixed;width:100%;z-index:1000">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Chat</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Service
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+        </ul>
+       
+        <!-- Middle: Search -->
+        <form asp-action="Index" asp-controller="Friend" method="get" class="form-inline my-2 my-lg-0 mx-auto">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="search friend" name="q">
+                <div class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                </div>
             </div>
-            <div class="functional-buttons">
-                <ul>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        </form>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">
-                                @User.FindFirstValue(ClaimTypes.NameIdentifier)
-                            </a>
-                        </li>
-                        <li><a asp-action="Logout" asp-controller="User">Log Out</a></li>
-                    }else{
-                        <li><a asp-action="Login" asp-controller="User">Sign in</a></li>
-                        <li><a asp-action="Register" asp-controller="User">Register</a></li>
-                    }
-                   
+        <!-- Right: User Info or Sign In/Register -->
+        <div class="ml-auto">
+            @if (User.Identity.IsAuthenticated)
+            {
+                var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                <button class="btn btn-danger">
+                    <a class="text-dark" href="/profile/@User.FindFirstValue(ClaimTypes.NameIdentifier)">
+                        @User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    </a>
+                </button>
+               
 
-                        
-                        
-
-                   
-                    
-                </ul>
-            </div>
+                <button class="btn btn-primary">  <a asp-action="Logout" class="text-dark" asp-controller="User">Log Out</a></button>
+            }
+            else
+            {
+                <a asp-action="Login" asp-controller="User">Sign in</a>
+                <a asp-action="Register" asp-controller="User">Register</a>
+            }
         </div>
-    </nav>
-</header>
+    </div>
+</nav>

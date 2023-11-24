@@ -1,0 +1,81 @@
+﻿@{
+    var friend = Model as IEnumerable<FriendDto>;
+}
+<style>
+    body {
+        background: #f8f8f8;
+        border-radius: 4px;
+    }
+
+
+    .people-nearby .google-maps {
+        background: #f8f8f8;
+        border-radius: 4px;
+        border: 1px solid #f1f2f2;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+        .people-nearby .google-maps .map {
+            height: 300px;
+            width: 100%;
+            border: none;
+        }
+
+    .people-nearby .nearby-user {
+        padding: 20px 0;
+        border-top: 1px solid #f1f2f2;
+        border-bottom: 1px solid #f1f2f2;
+        margin-bottom: 20px;
+    }
+
+    img.profile-photo-lg {
+        height: 80px;
+        width: 80px;
+        border-radius: 50%;
+    }
+</style>
+
+
+
+
+<div class="row" >
+    @if(friend != null)
+    {
+        foreach(var i in friend)
+        {
+
+            <div class="col-md-6 col-xl-6">
+                    <div class="people-nearby card">
+
+                        <div class="nearby-user">
+                            <div class="row">
+                            <div class="col-md-8 col-sm-8 d-flex align-items-center justify-content-start">
+                                <img src="~/images/@i.Avatar" alt="user" class="profile-photo-lg ml-2">
+                               
+                                    <div class="ml-2">
+                                    <h5>@i.Name</h5>
+                                    <span>@i.Description</span>
+                                    </div>
+                                    
+                                   
+                                   
+                                </div>
+                                <div class="col-md-4 col-sm-4 d-flex flex-column align-items-center justify-content-around">
+                                    <button class="btn btn-primary pull-right mb-2" style="min-width:80px">Message</button>
+                                    <a href="/profile/@i.Name">
+                                    <button class="btn btn-danger pull-right" style="min-width:80px">View</button>
+                                </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+           
+
+        }
+    }
+</div>
+
+
+   
