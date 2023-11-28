@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<FriendDto>
+@{
+    var idLogin = User.FindFirst("id").Value;
+}
 <style>
     body {
         background: #f8f8f8;
@@ -42,6 +45,8 @@
     {
         foreach (var i in Model)
         {
+           var checkReciever = !i.IsSender ? i.id : int.Parse(idLogin);
+            var checkSender = i.IsSender ? i.id : int.Parse(idLogin);
             <div class="col-md-6 col-xl-6">
                 <a href="/profile/@i.Name" class="card-link">
                     <div class="people-nearby card">
@@ -55,21 +60,52 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-sm-4 d-flex flex-column align-items-center justify-content-around">
-                                    @if(i.Status== null)
+                                    @if (i.Status == null)
                                     {
-                                        <button onclick="add(event)" data-send="@i.id" class="btn btn-primary but-addfriend pull-right mb-2" style="min-width:80px">AddFriend</button>
+                                        <button onclick="add(event)" 
+                                            dataq="@ViewData["search"]"
+                                                data-recieve="@i.id"
+                                                data-send="@idLogin"
+                                                class="btn btn-primary but-addfriend pull-right mb-2"
+                                                style="min-width:80px">
+                                            AddFriend
+                                        </button>
                                     }
-                                    @if (i.Status == "Pending")
-                                    {
-                                        <button onclick="add(event)" data-send="@i.id" class="btn btn-danger but-addfriend pull-right mb-2" style="min-width:80px">Cancel</button>
+                                    @if(i.Status=="Accept"){
+                                        <button onclick="add(event)" 
+                                            dataq="@ViewData["search"]"
+                                                data-recieve="@checkReciever"
+                                                data-send="@checkSender"
+                                                class="btn btn-info but-addfriend pull-right mb-2"
+                                                style="min-width:80px">
+                                            Friend
+                                        </button>
                                     }
-                                    @if (i.Status == "Accept")
+                                    @if(i.Status=="Pending" && i.IsSender == false)
                                     {
-                                        <button onclick="add(event)" data-send="@i.id" class="btn btn-info but-addfriend pull-right mb-2" style="min-width:80px">Friend</button>
+                                        <button onclick="add(event)" 
+                                            dataq="@ViewData["search"]" 
+                                        data-recieve="@checkReciever" 
+                                        data-send="@checkSender"
+                                                class="btn btn-danger but-addfriend pull-right mb-2"
+                                                style="min-width:80px">
+                                           Cancel
+                                        </button>
+                                    }
+                                    @if(i.Status=="Pending" && i.IsSender == true)
+                                    {
+                                        <button onclick="add(event)" 
+                                            dataq="@ViewData["search"]"
+                                                data-recieve="@checkReciever" data-send="@checkSender"
+                                                class="btn btn-danger but-addfriend pull-right mb-2"
+                                                style="min-width:80px">
+                                            Accept
+                                        </button>
                                     }
 
-
-                                    <button class="btn btn-warning pull-right" style="min-width:80px">Message</button>
+                                    <button 
+                                        class="btn btn-warning pull-right" 
+                                        style="min-width:80px">Message</button>
                                 </div>
                             </div>
                         </div>
@@ -80,25 +116,27 @@
     }
 </div>
 
-<form id="form_add" method="post" style="display:none" asp-controller="Friend" asp-action="AddFriend">
-    <input name="sender" value="@User.FindFirst("id").Value" />
-    <input id="recieve" name="reciever" />
-    <input name="q" value="@ViewData["search"]" />
-   
-</form>
+
 
 <script>
-    
+    let checkArr = ["Reject", "Cancel"]
     const add=(e)=>{
         e.preventDefault()
-        if (e.target.innerHTML == "AddFriend") {
-            let data = e.target.getAttribute("data-send")
-            document.getElementById("recieve").setAttribute('value',data);
-            document.getElementById("form_add").submit()
+        if (e.target.innerHTML.trim() == "AddFriend") {
+            let dataSend = e.target.getAttribute("data-send")
+            let dataRecieve = e.target.getAttribute("data-recieve")
+            let q = e.target.getAttribute("dataq")
+
+            window.location.href = `/add/${dataSend}/${dataRecieve}?q=${q}`
         }
-      
-    
-       
+
+        if ( checkArr.includes( e.target.innerHTML.trim()) ) {
+            let dataSend = e.target.getAttribute("data-send")
+            let dataRecieve = e.target.getAttribute("data-recieve")
+            let q= e.target.getAttribute("dataq")
+
+           window.location.href=`/cancel/${dataSend}/${dataRecieve}?q=${q}`
+        }
     }
 </script>
 

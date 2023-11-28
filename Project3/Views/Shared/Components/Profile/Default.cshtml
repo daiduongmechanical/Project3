@@ -1,9 +1,10 @@
 ﻿@using Newtonsoft.Json
 @{
     var user = Model.User as User;
-    var check = User.FindFirst("id").Value == user.Id.ToString() ? "" : "readonly";
-    var hidden = User.FindFirst("id").Value == user.Id.ToString() ? "submit" : "hidden";
-    var id= @User.FindFirst("id").Value;
+    var id = @User.FindFirst("id").Value;
+    var check = id == user.Id.ToString() ? "" : "readonly";
+    var hidden = id == user.Id.ToString() ? "submit" : "hidden";
+   
     string formattedDate = user.Dob.ToString("yyyy-MM-dd");
     var hobi = Model.Hobbies;
     var jsonServerData = @Html.Raw(JsonConvert.SerializeObject(hobi));
@@ -67,10 +68,15 @@
     <div class="card-body" style="padding-top:0">
         <div class="d-flex align-items-center justify-content-between">
             <h5 class="card-header "><b>Hobbies</b> </h5>
-            <span class="text-blue " id="btn-add-hobbie" style="margin-left:auto; cursor:pointer"> + Add hobbiet</span>
+            @if (id == user.Id.ToString())
+            {
+                 <span class="text-blue "
+            id="btn-add-hobbie" style="margin-left:auto; cursor:pointer"> + Add hobbiet</span>
+
+     
+            }
 
         </div>
-      
 
 
       
@@ -86,7 +92,8 @@
                       
                     <div class="col-sm-3">
                                 <h6 class="mb-0 type-hobbie">@i.TypeHobbie.Name</h6>
-                            <input type="hidden" class="form-control " name="type[]" value="@i.TypeId">
+                            <input type="hidden" class="form-control "
+                            name="type[]" value="@i.TypeId">
                     </div>
                     <div class="col-sm-9 text-secondary d-flex align-items-center">
                                 <input type="text" class="form-control mr-2 " name="detail[]" value="@i.detai" @check>

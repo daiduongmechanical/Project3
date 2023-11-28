@@ -16,6 +16,12 @@ namespace Project3.Data
         public DbSet<Hobbie> Hobbies { get; set; }
 		public DbSet<Friend> Friends { get; set; }
 
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<RoomMember> RoomMembers { get; set; }
 
-	}
+
+        
+
+    }
 }

@@ -23,9 +23,9 @@ namespace Project3.Controllers
             ViewData["search"] = q;
             IQueryable<FriendDto> check;
             var id = User.Claims.FirstOrDefault(c => c.Type == "id").Value;
+
             if (r.IsMatch(q))
             {
-
                 check = from child in _context.Users.Where(u => u.Phone.Contains(q) &&  u.Id !=int.Parse(id))
                         join sender in _context.Friends on child.Id equals sender.SendId into s
                         from sender in s.DefaultIfEmpty()
@@ -39,7 +39,6 @@ namespace Project3.Controllers
                             IsSender = child.Id == sender.SendId ? true : false,
                             id = child.Id,
                             Status = sender.status == null ? (reciver.status == null ? null : reciver.status) : sender.status
-
                         };
             }else{
                 check = from child in _context.Users.Where(u => u.UserName.Contains(q) && u.Id != int.Parse(id))
@@ -61,28 +60,63 @@ namespace Project3.Controllers
             return View(check);
         }
 
-      /*  [HttpGet]
-        [Microsoft.AspNetCore.Mvc.Route("/cancel/{sender}/{recieve}/{q?}")]
-        public async Task<IActionResult> CancelFriend(int sender, int recieve,string? q)
+        [HttpGet]
+        [Microsoft.AspNetCore.Mvc.Route("/cancel/{sender}/{recieve}/{q?}/{name?}")]
+        public async Task<IActionResult> CancelFriend(int sender, int recieve, string? q, string ? name)
         {
             var check = await _context.Friends
                  .FirstOrDefaultAsync(f => f.SendId == sender && f.RecieveId == recieve);
-            if check == null(){
+          
+            
+                _context.Friends.Remove(check);
+                await _context.SaveChangesAsync();
+            if (q == null)
+            {
+                return RedirectToAction("Index", "Profile", new { name = name});
 
             }
-        }*/
+            else
+            {
+                return RedirectToAction("Index", "Friend", new { q = q });
+            }
+               
+          
+        
+        }
 
-        [HttpPost]
-        public async Task<IActionResult> AddFriend(int sender, int reciever,  string? q)
+        [HttpGet]
+        [Microsoft.AspNetCore.Mvc.Route("/accept/{sender}/{recieve}/{q?}/{name?}")]
+        public async Task<IActionResult> AcceptFriend(int sender, int recieve, string? q, string? name)
+        {
+            var check = await _context.Friends.FirstOrDefaultAsync(f => f.SendId == sender && f.RecieveId == recieve);
+            check.status = "Accept";
+           await _context.SaveChangesAsync();
+            if (q == null)
+            {
+                ViewData["success"] = "Accept request successfully";
+                return RedirectToAction("Index", "Profile", new { name = name, text = "Require"});
+            }
+            else
+            {
+                ViewData["success"] = "Accept request successfully";
+                return RedirectToAction("Index", "Friend", new {q=q });
+            }
+
+
+        }
+
+        [HttpGet]
+		[Microsoft.AspNetCore.Mvc.Route("/add/{sender}/{reciever}/{q?}")]
+		public async Task<IActionResult> AddFriend(int sender, int reciever,  string? q)
         {
           _context.Friends.Add(new Models.Friend { RecieveId = reciever, SendId = sender });
          
             await _context.SaveChangesAsync();
             if (q==null)
             {
-                var user = _context.Users.FindAsync("recieveId");
+                var user = await _context.Users.FindAsync(reciever);
                 TempData["success"] = "Add friend was send sucessfully";
-                return RedirectToAction("Index", "Profile", user);
+                return RedirectToAction("Index", "Profile",new {name= user.UserName });
             }
             else
             {

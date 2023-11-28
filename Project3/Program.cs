@@ -1,7 +1,9 @@
+using DeviceDetectorNET.Parser.Device;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Project3.Data;
+using Project3.Hubs;
 using Project3.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +38,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
 });
 
+// add signalr
+builder.Services.AddSignalR();
+
 //add mail setting
 builder.Services.AddScoped<IMailService, MailService>();
 
@@ -60,5 +65,13 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapHub<ChatHub>("/chathub");
+});
+    
 
 app.Run();

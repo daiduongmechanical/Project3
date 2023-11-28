@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project3.Data;
 
@@ -11,9 +12,11 @@ using Project3.Data;
 namespace Project3.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231127150347_updateusermoreb")]
+    partial class updateusermoreb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,7 +137,7 @@ namespace Project3.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ReceiverId")
+                    b.Property<int>("RecieverId")
                         .HasColumnType("int");
 
                     b.Property<int>("SenderId")
@@ -146,9 +149,14 @@ namespace Project3.Migrations
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
 
                     b.ToTable("Messages");
                 });
@@ -393,8 +401,12 @@ namespace Project3.Migrations
             modelBuilder.Entity("Project3.Models.Message", b =>
                 {
                     b.HasOne("Project3.Models.User", null)
-                        .WithMany("Messages")
+                        .WithMany("RecieveMess")
                         .HasForeignKey("UserId");
+
+                    b.HasOne("Project3.Models.User", null)
+                        .WithMany("SentMess")
+                        .HasForeignKey("UserId1");
                 });
 
             modelBuilder.Entity("Project3.Models.RoomMember", b =>
@@ -440,11 +452,13 @@ namespace Project3.Migrations
 
                     b.Navigation("Hobbies");
 
-                    b.Navigation("Messages");
+                    b.Navigation("RecieveMess");
 
                     b.Navigation("Roles");
 
                     b.Navigation("Rooms");
+
+                    b.Navigation("SentMess");
                 });
 #pragma warning restore 612, 618
         }

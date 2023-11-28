@@ -28,6 +28,9 @@ namespace Project3.Models
         public ICollection<Device>? Devices { get; }
         public ICollection<Friend> Friends{ get; }
 
+        public ICollection<Message> Messages { get; set; }
+
+        public ICollection<RoomMember> Rooms { get; }
         public List<Hobbie> Hobbies { get; }
         public User(RegisterDto data) {
             UserName = data.Name;
