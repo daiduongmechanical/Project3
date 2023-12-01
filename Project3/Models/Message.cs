@@ -11,11 +11,18 @@ namespace Project3.Models
 
         public int SenderId { get; set; }
         public int ReceiverId { get; set; }
+        public string? status { get; set; }
+
+        public Message() {
+            status = "Pending";
+        }
+     
         [NotMapped]
         [ForeignKey("SenderId")]
         public virtual User? Sender { get; set; }
         [NotMapped]
         [ForeignKey("ReceiverId")]
         public virtual User? Receiver { get; set; }
+
     }
 }

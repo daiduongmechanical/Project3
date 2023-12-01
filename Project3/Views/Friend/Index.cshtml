@@ -45,9 +45,10 @@
     {
         foreach (var i in Model)
         {
-           var checkReciever = !i.IsSender ? i.id : int.Parse(idLogin);
+            var status = i.Status == null ? null : i.Status.ToLower();
+            var checkReciever = !i.IsSender ? i.id : int.Parse(idLogin);
             var checkSender = i.IsSender ? i.id : int.Parse(idLogin);
-            <div class="col-md-6 col-xl-6">
+            <div class="col-md-4 col-xl-4">
                 <a href="/profile/@i.Name" class="card-link">
                     <div class="people-nearby card">
                         <div class="nearby-user">
@@ -60,18 +61,19 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-sm-4 d-flex flex-column align-items-center justify-content-around">
-                                    @if (i.Status == null)
+                                    @if (status == null)
                                     {
                                         <button onclick="add(event)" 
-                                            dataq="@ViewData["search"]"
-                                                data-recieve="@i.id"
-                                                data-send="@idLogin"
-                                                class="btn btn-primary but-addfriend pull-right mb-2"
-                                                style="min-width:80px">
+                                        dataq="@ViewData["search"]"
+                                        data-recieve="@i.id"
+                                        data-send="@idLogin"
+                                        class="btn btn-primary but-addfriend pull-right mb-2"
+                                        style="min-width:80px">
                                             AddFriend
                                         </button>
                                     }
-                                    @if(i.Status=="Accept"){
+                                    @if (status == "accept")
+                                    {
                                         <button onclick="add(event)" 
                                             dataq="@ViewData["search"]"
                                                 data-recieve="@checkReciever"
@@ -81,7 +83,7 @@
                                             Friend
                                         </button>
                                     }
-                                    @if(i.Status=="Pending" && i.IsSender == false)
+                                    @if (status == "pending" && i.IsSender == false)
                                     {
                                         <button onclick="add(event)" 
                                             dataq="@ViewData["search"]" 
@@ -92,7 +94,8 @@
                                            Cancel
                                         </button>
                                     }
-                                    @if(i.Status=="Pending" && i.IsSender == true)
+
+                                    @if (status == "pending" && i.IsSender == true)
                                     {
                                         <button onclick="add(event)" 
                                             dataq="@ViewData["search"]"
@@ -104,7 +107,9 @@
                                     }
 
                                     <button 
-                                        class="btn btn-warning pull-right" 
+                                        class="btn btn-warning pull-right",
+                                            onclick="add(event)"
+                                            data-send="@i.Name"
                                         style="min-width:80px">Message</button>
                                 </div>
                             </div>
@@ -137,7 +142,13 @@
 
            window.location.href=`/cancel/${dataSend}/${dataRecieve}?q=${q}`
         }
+
+        if (e.target.innerHTML.trim() == "Message") {
+            let dataSend = e.target.getAttribute("data-send");
+            window.location.href = `/chat/${dataSend}`
+        }
     }
+  
 </script>
 
 

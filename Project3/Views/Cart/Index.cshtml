@@ -1,0 +1,113 @@
+﻿
+
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<h1>Services</h1>
+<div class="row">
+    <div class="col-md-6">
+        <label class="control-label">Service Name:</label>
+        <select id="select-service" class="form-control" asp-items="@ViewBag.selectService">
+            <option value="">--Service--</option>
+        </select>
+        <input type="hidden" />
+    </div>
+    @if(ViewBag.selectDuration != null)
+    {
+    <div class="col-md-6">
+            <form method="post" asp-action="AddService">
+        <label class="control-label">Duration:</label>
+        <select id="drpEmpList" class="form-control" asp-items="@ViewBag.selectDuration" name="servicePriceId">
+            <option value="">--Month--</option>
+        </select>
+            <button type="submit" class="btn btn-primary mt-3 mb-3">Add Service</button>
+        </form>
+    </div>
+        
+    }
+</div>
+
+<table style="width: 100%" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Service Name</th>
+            <th>Duration(Months)</th>
+            <th>Price($)</th>
+        </tr>
+    </thead>
+   @*  <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.ServiceName
+                </td>
+                <td>
+                    @item.Duration months
+                </td>
+                <td>
+                    @item.Price
+                </td>
+                <td>
+                    @item.Subtotal
+                </td>
+            </tr>
+        }
+    </tbody> *@
+    <tbody>
+        @if (ViewBag.registered != null )
+        {
+            @foreach (var item in ViewBag.registered)
+            {
+                <tr>
+                    <td>
+                        @item.ServicePrice.Service.Name
+                    </td>
+                    <td>
+                        @item.ServicePrice.Duration 
+                    </td>
+                    <td>
+                        @item.ServicePrice.Price
+                    </td>
+                    <td>
+                        @Html.ActionLink("Delete", "DeleteService", new{
+                ServiceRegisteredId = item.Id
+                        }, new {@class="btn btn-danger", @role="button" } )
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4">No items in the cart</td>
+            </tr>
+        }
+        <tr>
+            <td colspan="3" style="text-align: right;">Subtotal: </td>
+            <td style="text-align: center;">@ViewBag.Subtotal $</td>
+        </tr>
+        <tr>
+            <td style="border-top:none;text-align:right" colspan="4"><a href="/Paypal/PaymentWithPaypal" class="btn btn-success">Paypal Checkout</a></td>
+        </tr>
+    </tbody>
+
+</table>
+
+
+
+@section Scripts
+    {
+    <script>
+        $(document).ready(function () {
+            $("#select-service").on('change', function () {
+                var serviceId = $(this).val();
+                console.log(this.value);
+                window.location.href = '@Url.Action("Index", "Cart")'  + "?serviceId=" + serviceId
+            })
+        })
+    </script>
+    }
+   
+

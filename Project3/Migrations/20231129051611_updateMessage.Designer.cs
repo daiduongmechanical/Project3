@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project3.Data;
 
@@ -11,9 +12,11 @@ using Project3.Data;
 namespace Project3.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231129051611_updateMessage")]
+    partial class updateMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,120 +236,6 @@ namespace Project3.Migrations
                     b.ToTable("RoomMembers");
                 });
 
-            modelBuilder.Entity("Project3.Models.Service", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Services");
-                });
-
-            modelBuilder.Entity("Project3.Models.ServiceContent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Service_Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Service_Id");
-
-                    b.ToTable("ServiceContents");
-                });
-
-            modelBuilder.Entity("Project3.Models.ServicePrice", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Service_Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Service_Id");
-
-                    b.ToTable("ServicesPrice");
-                });
-
-            modelBuilder.Entity("Project3.Models.ServiceRegistered", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Service_Price_Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("User_Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Service_Price_Id");
-
-                    b.HasIndex("User_Id");
-
-                    b.ToTable("ServiceRegistereds");
-                });
-
             modelBuilder.Entity("Project3.Models.TypeHobbie", b =>
                 {
                     b.Property<int>("Id")
@@ -527,47 +416,6 @@ namespace Project3.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("Project3.Models.ServiceContent", b =>
-                {
-                    b.HasOne("Project3.Models.Service", "Service")
-                        .WithMany("ServiceContents")
-                        .HasForeignKey("Service_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("Project3.Models.ServicePrice", b =>
-                {
-                    b.HasOne("Project3.Models.Service", "Service")
-                        .WithMany("ServicePrices")
-                        .HasForeignKey("Service_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("Project3.Models.ServiceRegistered", b =>
-                {
-                    b.HasOne("Project3.Models.ServicePrice", "ServicePrice")
-                        .WithMany("Registered")
-                        .HasForeignKey("Service_Price_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Project3.Models.User", "User")
-                        .WithMany("Registered")
-                        .HasForeignKey("User_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ServicePrice");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Project3.Models.UserRole", b =>
                 {
                     b.HasOne("Project3.Models.Role", "Role")
@@ -590,18 +438,6 @@ namespace Project3.Migrations
                     b.Navigation("Members");
                 });
 
-            modelBuilder.Entity("Project3.Models.Service", b =>
-                {
-                    b.Navigation("ServiceContents");
-
-                    b.Navigation("ServicePrices");
-                });
-
-            modelBuilder.Entity("Project3.Models.ServicePrice", b =>
-                {
-                    b.Navigation("Registered");
-                });
-
             modelBuilder.Entity("Project3.Models.User", b =>
                 {
                     b.Navigation("Devices");
@@ -611,8 +447,6 @@ namespace Project3.Migrations
                     b.Navigation("Hobbies");
 
                     b.Navigation("Messages");
-
-                    b.Navigation("Registered");
 
                     b.Navigation("Roles");
 

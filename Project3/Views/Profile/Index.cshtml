@@ -2,6 +2,7 @@
 @{
 	string component = ViewData["view"].ToString();
 	var idLogin = User.FindFirst("id").Value;
+	var status = Model.Status == null ? null : Model.Status.ToLower();
 }
 
 	<style>
@@ -82,13 +83,13 @@ body{
 										<h4>@Model.Name</h4>
 										<p class="text-muted font-size-sm">@Model.Description</p>
 									}
-									@if (Model.Status == null && idLogin != Model.id.ToString())
+									@if (status == null && idLogin != Model.id.ToString())
 									{
 									
 										<a href="/add/@idLogin/@Model.id" 
 										class="btn btn-primary">Add friend</a>
 								}
-									@if (Model.Status == "Pending" && Model.IsSender == true)
+									@if (status == "pending" && Model.IsSender == true)
 									{
 										<p class="text-muted font-size-sm">@Model.Description</p>
 										<a href="/accept/@Model.id/@idLogin?name=@Model.Name" 
@@ -98,7 +99,7 @@ body{
 
 									}
 									
-									@if (Model.Status == "Pending" && Model.IsSender ==false)
+									@if (status == "pending" && Model.IsSender ==false)
 									{
 										<p class="text-muted font-size-sm">@Model.Description</p>
 
@@ -106,7 +107,7 @@ body{
 										class="btn btn-danger">Cancel</a>
 									}
 
-									@if (Model.Status == "Accept")
+									@if (status == "accept")
 									{
 										<p class="text-muted font-size-sm">@Model.Description</p>
 										<a href="#" class="btn btn-info">friend</a>							

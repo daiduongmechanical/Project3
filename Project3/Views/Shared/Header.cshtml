@@ -1,4 +1,75 @@
 ﻿@using System.Security.Claims;
+<style>
+    .container-avatar {
+        position: relative;
+        display: inline-block;
+        margin-right:30px;
+    }
+    .text-in-p{
+  
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    
+    }
+
+    .message_count{
+        position:relative;
+        bottom:10px;
+        width: 25px;
+        height: 25px;
+   text-align:center;
+        border-radius: 50%;
+       display:none; 
+      
+        
+    }
+
+    .image {
+        width: 60px;
+        height: 60px;
+
+        border-radius:50%;    }
+
+    .list {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 30px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 8px;
+        z-index: 1;
+        min-width:200px;
+        width:auto;
+
+    }
+
+    .container-avatar:hover .list {
+        display: block;
+        cursor: pointer;
+
+    }
+
+    .list a {
+        display: block;
+        text-decoration: none;
+    text-align:right;
+    border-top:0.5px solid gray;
+        color: #333;
+        padding: 8px 8px 8px 30px;
+        width: 100%; /* Set the width to 100% */
+        box-sizing: border-box; /* Include padding in the width calculation */
+        transition: background-color 0.3s;
+
+    }
+
+        .list a:hover {
+            background-color: #f0f0f0;
+        }
+</style>
+
 
 <nav class="navbar navbar-expand-lg navbar-light bg-warning" style="position:fixed;width:100%;z-index:1000">
     <a class="navbar-brand" href="#">Navbar</a>
@@ -38,18 +109,53 @@
         </form>
 
         <!-- Right: User Info or Sign In/Register -->
-        <div class="ml-auto">
+        <div class="ml-auto d-flex justify-content-center align-items-center">
             @if (User.Identity.IsAuthenticated)
             {
-                var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                <button class="btn btn-danger">
-                    <a class="text-dark" href="/profile/@User.FindFirstValue(ClaimTypes.NameIdentifier)">
-                        @User.FindFirstValue(ClaimTypes.NameIdentifier)
-                    </a>
-                </button>
+                <div class="btn-group  mr-5">
+                    <div class="d-flex align-items-center dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-comment-dots " style="font-size:35px"></i>
+                        <div class="message_count bg bg-danger "></div>
+                    </div>
+                   
+                    <div class="dropdown-menu dropdown-menu-right" id="notify-new-message">
+                      
+                        
+
+
+                     
+                    </div>
+                </div>
+
+       
+
+             
+
+            
+               
+              
+             
+
+
+                <!-- Example single danger button -->
                
 
-                <button class="btn btn-primary">  <a asp-action="Logout" class="text-dark" asp-controller="User">Log Out</a></button>
+
+                <div class="container-avatar" id="avatar-container" data-info="@User.FindFirst("id").Value" data-send=" @User.FindFirstValue(ClaimTypes.NameIdentifier)">
+                    <!-- Use the 'img-thumbnail' class for Bootstrap-styled image -->
+                    <img src="~/images/@User.FindFirst("avatar").Value" alt="Your Image" class="img-thumbnail image">
+                    <!-- Use 'list-group' and 'list-group-item' classes for Bootstrap-styled list -->
+                    <div class="list custom-class list-group">
+                        <a class="text-dark" href="/profile/@User.FindFirstValue(ClaimTypes.NameIdentifier)">
+                            @User.FindFirstValue(ClaimTypes.NameIdentifier)
+                        </a>
+                        <a href="#" class="text-dark">change password</a>
+                        <a asp-action="Logout" class="text-dark" asp-controller="User">Log Out</a>
+                    </div>
+                </div>
+               
+
+               
             }
             else
             {

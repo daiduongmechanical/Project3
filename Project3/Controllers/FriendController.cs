@@ -2,16 +2,17 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Project3.Data;
 using Project3.Dtos;
 using Project3.Models;
 using Project3.Shared;
 using System.Text.RegularExpressions;
+using Twilio.TwiML.Fax;
 
 
 namespace Project3.Controllers
 {
-    [AllowAnonymous]
     public class FriendController : BaseController
     {
         public FriendController(MyDbContext context) : base(context)
@@ -20,13 +21,14 @@ namespace Project3.Controllers
         public async Task<IActionResult> Index(string q)
         {
             var r = new Regex(@"^\d{8,12}$");
+            Stack<FriendDto> result = new Stack<FriendDto>();
             ViewData["search"] = q;
             IQueryable<FriendDto> check;
             var id = User.Claims.FirstOrDefault(c => c.Type == "id").Value;
 
             if (r.IsMatch(q))
             {
-                check = from child in _context.Users.Where(u => u.Phone.Contains(q) &&  u.Id !=int.Parse(id))
+                check = from child in _context.Users.Where(u => u.Phone.Contains(q) && u.Id != int.Parse(id))
                         join sender in _context.Friends on child.Id equals sender.SendId into s
                         from sender in s.DefaultIfEmpty()
                         join reciver in _context.Friends on child.Id equals reciver.RecieveId into re
@@ -36,28 +38,89 @@ namespace Project3.Controllers
                             Name = child.UserName,
                             Avatar = child.Avatar,
                             Description = child.Description,
+                            id = child.Id,
                             IsSender = child.Id == sender.SendId ? true : false,
-                            id = child.Id,
                             Status = sender.status == null ? (reciver.status == null ? null : reciver.status) : sender.status
                         };
-            }else{
-                check = from child in _context.Users.Where(u => u.UserName.Contains(q) && u.Id != int.Parse(id))
-                        join sender in _context.Friends on child.Id equals sender.SendId into s
-                        from sender in s.DefaultIfEmpty()
-                        join reciver in _context.Friends on child.Id equals reciver.RecieveId into re
-                        from reciver in re.DefaultIfEmpty()
-                        select new FriendDto
-                        {
-                            Name = child.UserName,
-                            Avatar = child.Avatar,
-                            Description=child.Description,
-                            id = child.Id,
-                            IsSender= child.Id==sender.SendId?true :false,
-                            Status = sender.status == null ? (reciver.status == null ? null : reciver.status) : sender.status
-                        };
+
             }
-          await check.ToListAsync();
-            return View(check);
+            else {
+                check = _context.Users.Where(u => u.UserName.Contains(q) && u.Id != int.Parse(id))
+                    .Join(
+                    _context.Friends,
+                    u => u.Id,
+                    f => f.SendId,
+                    (u, f) => new FriendDto
+                    {
+                        Avatar = u.Avatar,
+                        Name = u.UserName,
+                        id = u.Id,
+                        Description = u.Description,
+                        sentId = f.SendId.ToString(),
+                        reciveId = f.RecieveId.ToString(),
+                        Status=f.status
+                     
+
+                    }
+                    ).Union(
+                     _context.Users.Where(u => u.UserName.Contains(q) && u.Id!=int.Parse(id) )
+                    .Join(
+                    _context.Friends,
+                    u => u.Id,
+                    f => f.RecieveId,
+                    (u, f) => new FriendDto
+
+                    {
+                        Avatar = u.Avatar,
+                        Name = u.UserName,
+                        id = u.Id,
+                        Description = u.Description,
+                        sentId = f.SendId.ToString(),
+                        reciveId = f.RecieveId.ToString(),
+                        Status = f.status
+
+                    }
+                    )
+                    );
+
+        }
+
+            foreach (var i in check)
+            {
+
+                if (result.Count == 0)
+                {
+                    i.IsSender = i.id == int.Parse(i.sentId) ? true : false;
+                    i.Status = i.sentId != id && i.reciveId != id ? null : i.Status;
+                    result.Push(i);
+                    
+                }
+                else
+                {
+                    var first = result.Peek();
+                    if (first.id != i.id)
+                    {
+                        i.IsSender = i.id == int.Parse(i.sentId) ? true : false;
+                        i.Status = i.sentId != id && i.reciveId != id ? null : i.Status;
+                        result.Push(i);
+                    }
+                    else
+                    {
+                        if (i.reciveId==id || i.sentId==id)
+                        {
+                            result.Pop();
+                            i.IsSender = i.id == int.Parse(i.sentId) ? true : false;
+                            i.Status = i.sentId != id && i.reciveId != id ? null : i.Status;
+                            result.Push(i);
+
+                        }
+                    }
+                  }
+
+            }
+
+          
+            return View(result.ToArray());
         }
 
         [HttpGet]

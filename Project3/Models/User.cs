@@ -31,6 +31,7 @@ namespace Project3.Models
         public ICollection<Message> Messages { get; set; }
 
         public ICollection<RoomMember> Rooms { get; }
+        public virtual ICollection<ServiceRegistered> Registered { get; set; } = new List<ServiceRegistered>();
         public List<Hobbie> Hobbies { get; }
         public User(RegisterDto data) {
             UserName = data.Name;

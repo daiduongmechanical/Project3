@@ -1,0 +1,70 @@
+﻿<link rel="stylesheet" href="~/fe/css/chat.css"/>
+@{
+    var data = Model as ChatDto;
+}
+<div class="chat" style="height:90vh">
+    <div class="chat-header  clearfix" id="rootUrl" data-root-url="@Url.Content("~/")" data-send="data.User.Avatar">
+        <div class="row">
+            <div class="col-lg-6">
+                <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
+                    <img src="~/images/data.User.Avatar" alt="avatar">
+                </a>
+                <div class="chat-about">
+                    <h6 class="m-b-0">data.User.UserName</h6>
+                    @*   <small>Last seen: 2 hours ago</small> *@
+                </div>
+            </div>
+                          @*   
+                              option
+                              <div class="col-lg-6 hidden-sm text-right">
+                                <a href="javascript:void(0);" class="btn btn-outline-secondary"><i class="fa fa-camera"></i></a>
+                                <a href="javascript:void(0);" class="btn btn-outline-primary"><i class="fa fa-image"></i></a>
+                                <a href="javascript:void(0);" class="btn btn-outline-info"><i class="fa fa-cogs"></i></a>
+                                <a href="javascript:void(0);" class="btn btn-outline-warning"><i class="fa fa-question"></i></a>
+                            </div> *@
+
+                    
+                    <div class="chat-history">
+                        <ul class="m-b-0" id="messagesList">
+                            @if (data.Messages != null)
+                            {
+                                foreach( var i in data.Messages)
+                                {
+                                    if(i.SenderId== data.User.Id)
+                                    {
+                                        <li class="clearfix">
+                                            <div class="message-data">
+                                                <span class="message-data-time">10:12 AM, Today</span>
+                                               
+                                            </div>
+                                            <img style="width:50px;height:50px; border-radius:50%" src="~/images/data.User.Avatar" alt="avatar">
+                                            <div class="message my-message">@i.Content</div>
+                                        </li>
+                                    }else{
+                                        <li class="clearfix">
+                                            <div class="message-data text-right">
+                                                <span class="message-data-time">10:10 AM, Today</span>
+                                                
+                                            </div>
+                                            <div class="message other-message float-right">@i.Content </div>
+                                        </li>
+
+                                    }
+                                }
+                            }
+                          
+                        </ul>
+                    </div>
+                    <div class="chat-message clearfix">
+                        <div class="input-group mb-0"> 
+                            <div class="input-group-prepend">
+                            </div>
+                            <input type="hidden" id="userIdInput" value="data.User.UserName">
+                            <input type="hidden" id="reciveId" value="data.User.Id">
+                            <input type="text" class="form-control" id="messageInput" placeholder="Enter text here...">
+                            <button onclick="sendMessage()"><i class="fa fa-send"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>

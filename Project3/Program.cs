@@ -44,6 +44,8 @@ builder.Services.AddSignalR();
 //add mail setting
 builder.Services.AddScoped<IMailService, MailService>();
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

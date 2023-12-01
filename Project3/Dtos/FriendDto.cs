@@ -8,5 +8,8 @@
         public string Description { get; set; }
         public string? Status {  get; set; }
         public bool IsSender {  get; set; }
+        public string? reciveId { get; set; }
+        public string? sentId { get; set; }
+
     }
 }

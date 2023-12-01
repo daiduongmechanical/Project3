@@ -44,7 +44,6 @@
     {
         foreach(var i in friend)
         {
-
             <div class="col-md-6 col-xl-6">
                     <div class="people-nearby card">
 
@@ -57,12 +56,11 @@
                                     <h5>@i.Name</h5>
                                     <span>@i.Description</span>
                                     </div>
-                                    
-                                   
-                                   
                                 </div>
                                 <div class="col-md-4 col-sm-4 d-flex flex-column align-items-center justify-content-around">
+                                <a href="/chat/@i.Name">
                                     <button class="btn btn-primary pull-right mb-2" style="min-width:80px">Message</button>
+                                </a>
                                     <a href="/profile/@i.Name">
                                     <button class="btn btn-danger pull-right" style="min-width:80px">View</button>
                                 </a>
