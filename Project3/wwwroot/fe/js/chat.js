@@ -178,7 +178,7 @@ const checkOnlineStatus = () => {
     connection.invoke("CheckOnline", list).catch((err) => { console.log(err) });
 }
 
-setInterval(checkOnlineStatus, 10000)
+setInterval(checkOnlineStatus, 5000)
 
 // set enter sent message
 let messageCheck = document.getElementById("messageInput")

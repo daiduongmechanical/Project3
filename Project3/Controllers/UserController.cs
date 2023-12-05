@@ -282,7 +282,7 @@ namespace Project3.Controllers
         public void SendMessage(string phone, string code)
         {
             var accountSid = "ACc0caca8533ac9ab66cabf5bf31e6cd3c";
-            var authToken = "4938a986267cfc4f15654e586a561c5b";
+            var authToken = "a07c4ca12eb5461e35e6a810d897f9b6";
             TwilioClient.Init(accountSid, authToken);
             var message = MessageResource.Create(
             body: $"Your verify code : {code}",

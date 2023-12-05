@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Project3.Data;
+using Project3.Filter;
 using Project3.Hubs;
 using Project3.Mail;
 using StackExchange.Profiling.Storage;
@@ -30,6 +31,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddMvc(options =>
 {
     options.Filters.Add(new AuthorizeFilter());
+    options.Filters.Add(typeof(ServiceActionFilter));
 });
 
 // add policy

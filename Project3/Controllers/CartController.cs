@@ -9,7 +9,6 @@ using Project3.Shared;
 
 namespace Project3.Controllers
 {
-    [Authorize]
     public class CartController : BaseController
     {
         public CartController(MyDbContext context) : base(context)

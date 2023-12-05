@@ -1,0 +1,13 @@
+﻿@{
+	var list = Model as List<Service>;
+}
+	
+@if(list != null)
+{
+	@foreach (var i in list)
+
+	{
+		<a class="dropdown-item" asp-controller="About" asp-action="Index" asp-route-type="@i.Name">@i.Name</a>
+	}
+}
+
