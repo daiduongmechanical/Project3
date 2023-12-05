@@ -1,0 +1,40 @@
+﻿@model Project3.Models.ServiceContent
+
+@{
+    Layout = BaseText.AdminLayout;
+}
+
+
+<div class="container " style="min-height:100vh ;width:100vw; background-color:white;padding:2rem">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+        <h1 class="mb-3">Edit Content</h1>
+        <div>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+    <div bg bg-danger" style="width:100%">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input hidden asp-for="Id" value="@Model.Id" />
+            <div class="form-group">
+                <label asp-for="ServiceId" class="control-label"></label>
+                <input asp-for="ServiceId" value="@Model.ServiceId" readonly class="form-control" />
+                <span asp-validation-for="ServiceId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea style="width:80vw; height:100px" asp-for="Content"
+                          value="@Model.Content" id="editor1" class="form-control "></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="finished" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('editor1');
+</script>

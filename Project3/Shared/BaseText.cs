@@ -9,7 +9,6 @@
         public const string NotFound = "Id not found. Please checking again";
         public const string TypeImageError = "Type of image not inlegal";
         public const string AdminLayout = "~/Views/AdminLayout/_Layout.cshtml";
-      
-            
+        public const string Default = "Default";
     }
 }

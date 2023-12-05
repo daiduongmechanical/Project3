@@ -1,0 +1,34 @@
+﻿@model Project3.Models.TypeHobbie
+
+@{
+    ViewData["Title"] = "editHobbies";
+    Layout = "~/Views/AdminLayout/_Layout.cshtml";
+}
+
+<h1>editHobbies</h1>
+
+<h4>TypeHobbie</h4>
+<hr />
+<div class="row" style="min-height:80vh">
+    <div class="col-md-4">
+        <form asp-action="editHobbies">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="Id" />
+          
+          
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

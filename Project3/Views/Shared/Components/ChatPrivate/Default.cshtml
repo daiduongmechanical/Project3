@@ -1,16 +1,17 @@
-﻿<link rel="stylesheet" href="~/fe/css/chat.css"/>
+﻿
 @{
     var data = Model as ChatDto;
 }
-<div class="chat" style="height:90vh">
-    <div class="chat-header  clearfix" id="rootUrl" data-root-url="@Url.Content("~/")" data-send="data.User.Avatar">
-        <div class="row">
-            <div class="col-lg-6">
+
+<div class="chat" style="height:90vh"> 
+    <div class="chat-header clearfix" id="rootUrl" data-root-url="@Url.Content("~/")" data-send="@data.User.Avatar">
+        <div class="row" >
+            <div class=" d-flex align-items-center" style="width:100% ; border-bottom:solid 1px gray" >
                 <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
-                    <img src="~/images/data.User.Avatar" alt="avatar">
+                    <img style="width:60px; height:60px; border-radius:50%" src="~/images/@data.User.Avatar" alt="avatar">
                 </a>
                 <div class="chat-about">
-                    <h6 class="m-b-0">data.User.UserName</h6>
+                    <h4 class="m-b-0">@data.User.UserName</h4>
                     @*   <small>Last seen: 2 hours ago</small> *@
                 </div>
             </div>
@@ -24,7 +25,7 @@
                             </div> *@
 
                     
-                    <div class="chat-history">
+                    <div class="chat-history"  >
                         <ul class="m-b-0" id="messagesList">
                             @if (data.Messages != null)
                             {
@@ -34,16 +35,16 @@
                                     {
                                         <li class="clearfix">
                                             <div class="message-data">
-                                                <span class="message-data-time">10:12 AM, Today</span>
+                                        <span class="message-data-time">@BaseMethod.FormatDateTime(i.CreatedDate)</span>
                                                
                                             </div>
-                                            <img style="width:50px;height:50px; border-radius:50%" src="~/images/data.User.Avatar" alt="avatar">
+                                            <img style="width:40px;height:40px; border-radius:50%" src="~/images/@data.User.Avatar" alt="avatar">
                                             <div class="message my-message">@i.Content</div>
                                         </li>
                                     }else{
                                         <li class="clearfix">
                                             <div class="message-data text-right">
-                                                <span class="message-data-time">10:10 AM, Today</span>
+                                                <span class="message-data-time">@BaseMethod.FormatDateTime(i.CreatedDate)</span>
                                                 
                                             </div>
                                             <div class="message other-message float-right">@i.Content </div>
@@ -59,9 +60,10 @@
                         <div class="input-group mb-0"> 
                             <div class="input-group-prepend">
                             </div>
-                            <input type="hidden" id="userIdInput" value="data.User.UserName">
-                            <input type="hidden" id="reciveId" value="data.User.Id">
-                            <input type="text" class="form-control" id="messageInput" placeholder="Enter text here...">
+                            <input type="hidden" id="userIdInput" value="@data.User.UserName">
+                            <input type="hidden" id="reciveId" value="@data.User.Id">
+                            <input type="hidden" id="send_Id" value="@User.FindFirst("id").Value">
+                            <input  type="text" class="form-control" id="messageInput" placeholder="Enter text here...">
                             <button onclick="sendMessage()"><i class="fa fa-send"></i></button>
                         </div>
                     </div>

@@ -1,0 +1,35 @@
+﻿@model List<Project3.Models.User>
+@{
+    ViewData["Title"] = "ListUserRole";
+    Layout = "~/Views/AdminLayout/_Layout.cshtml";
+}
+
+<h2>User List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Roles</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>
+                    @foreach (var role in user.Roles)
+                    {
+                        @role.Role.RoleName <br />
+                    }
+                </td>
+                <td>
+                    <a asp-action="EditUserRole" asp-route-id="@user.Id">Edit Role</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

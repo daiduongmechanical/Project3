@@ -74,7 +74,26 @@ namespace Project3.Shared
             }
         }
 
-       
+        public static string FormatDateTime(DateTime inputDateTime)
+        {
+            DateTime now = DateTime.Now;
+            TimeSpan timeDifference = now - inputDateTime;
+
+            if (timeDifference.Days == 0)
+            {
+                return $"{inputDateTime.ToString("HH:mm")} today";
+            }
+            else if (timeDifference.Days == 1)
+            {
+                return $"{inputDateTime.ToString("HH:mm")} yesterday";
+            }
+            else
+            {
+                return $"{inputDateTime.ToString("HH:mm dd/MM/yyyy")}";
+            }
+        }
+
+
     }
     
 }

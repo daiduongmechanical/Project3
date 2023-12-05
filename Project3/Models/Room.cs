@@ -2,9 +2,10 @@
 
 namespace Project3.Models
 {
-    public class Room:BaseEntity
+    public class Room : BaseEntity
     {
-        public string Name { get; set; }
-        public List<RoomMember>? Members { get;}
+        public string? Name { get; set; }
+        public ICollection<RoomMessage>? Messages { get; }
+        public ICollection<RoomMember>? members { get; }
     }
 }

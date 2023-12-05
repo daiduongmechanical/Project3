@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Project3.Models.ServicePrice>
+
+@{
+    Layout = BaseText.AdminLayout;
+}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cảnh báo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc muốn xóa không ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Không xóa</button>
+                <a role="button" class="btn btn-danger" id="a-link-delete-room-type"> Xóa </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<h1 class="mb-3" style="text-align:center">Price List</h1>
+<div class="container" style="min-height:100vh;background-color:white;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; padding:1rem;padding-bottom:1rem">
+    @if (TempData.ContainsKey("ErrorMessage"))
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+
+
+    <a asp-action="Create" class="btn btn-warning mb-2">Create New</a>
+    <table id="room_type" class="table table-hover table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th class="text-center">ID</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Service ID</th>
+                <th class="text-center">Duration(Month)</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(Model != null)
+            {
+
+
+                foreach (var price in Model)
+                {
+                    <tr>
+                        <td>@price.Id</td>
+                    <td>@price.Price</td>
+                    <td>@price.ServiceId</td>
+                    <td>@price.Duration</td>
+                    <td class="text-center">
+                        <a asp-action="Edit" asp-route-id="@price.Id" role="button" class="btn btn-info">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@price.Id" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+}
+            }
+        </tbody>
+    </table>
+</div>
+

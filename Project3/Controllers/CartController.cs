@@ -19,9 +19,9 @@ namespace Project3.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int? ServiceId)
         {
-            if(ServiceId != null)
+            if (ServiceId != null)
             {
-                var duration = await _context.ServicesPrice.Where(x=>x.Service_Id == ServiceId).ToListAsync();
+                var duration = await _context.ServicePrice.Where(x => x.ServiceId == ServiceId).ToListAsync();
                 List<SelectListItem> customDurationList = duration
                     .Select(s => new SelectListItem
                     {
@@ -32,12 +32,10 @@ namespace Project3.Controllers
                 var selectDuration = new SelectList(customDurationList, "Value", "Text");
                 ViewBag.selectDuration = selectDuration;
 
-
                 var services = await _context.Services.ToListAsync();
-                var service = await _context.Services.FirstOrDefaultAsync(x=>x.Id == ServiceId);
+                var service = await _context.Services.FirstOrDefaultAsync(x => x.Id == ServiceId);
                 var selectService = new SelectList(services, nameof(Service.Id), nameof(Service.Name), service!.Id);
                 ViewBag.selectService = selectService;
-
             }
             else
             {
@@ -49,13 +47,14 @@ namespace Project3.Controllers
             if (HttpContext.User.Identity.IsAuthenticated)
             {
                 var userId = HttpContext.User.FindFirst(c => c.Type == "id").Value;
-                if(userId != null) {
+                if (userId != null)
+                {
                     var registered = await _context.ServiceRegistereds
-                        .Include(x=>x.ServicePrice)
-                        .Where(x => x.User_Id == Int32.Parse(userId))
+                        .Include(x => x.ServicePrice)
+                        .Where(x => x.UserId == Int32.Parse(userId))
                         .ToListAsync();
                     ViewBag.registered = registered;
-                      if(registered != null && registered.Any())
+                    if (registered != null && registered.Any())
                     {
                         var subtotal = registered.Sum(x => x.ServicePrice.Price);
 
@@ -64,7 +63,7 @@ namespace Project3.Controllers
                     else
                     {
                         ViewBag.Subtotal = 0;
-                    }   
+                    }
                 }
             }
 
@@ -74,20 +73,20 @@ namespace Project3.Controllers
         [HttpPost]
         public async Task<IActionResult> AddService(int servicePriceId)
         {
-            if(servicePriceId != null)
+            if (servicePriceId != null)
             {
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
                     var userId = HttpContext.User.FindFirst(c => c.Type == "id").Value;
                     ServiceRegistered newOrder = new()
                     {
-                        Service_Price_Id = servicePriceId,
-                        User_Id = Int32.Parse(userId),
+                        Service_PriceId = servicePriceId,
+                        UserId = Int32.Parse(userId),
                         Status = "Pending"
                     };
                     _context.ServiceRegistereds.Add(newOrder);
                     await _context.SaveChangesAsync();
-                // return Ok(userId);
+                    // return Ok(userId);
                 }
             }
             return RedirectToAction("Index");
@@ -96,16 +95,16 @@ namespace Project3.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteService(int ServiceRegisteredId)
         {
-            if(ServiceRegisteredId != null)
+            if (ServiceRegisteredId != null)
             {
                 var serviceRegistered = await _context.ServiceRegistereds.FirstOrDefaultAsync(x => x.Id == ServiceRegisteredId);
-                if(serviceRegistered != null)
+                if (serviceRegistered != null)
                 {
-                _context.ServiceRegistereds.Remove(serviceRegistered);
+                    _context.ServiceRegistereds.Remove(serviceRegistered);
                     await _context.SaveChangesAsync();
                 }
             }
-                    return RedirectToAction("Index");
+            return RedirectToAction("Index");
         }
     }
 }

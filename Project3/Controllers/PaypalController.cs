@@ -20,7 +20,8 @@ namespace Project3.Controllers
         private readonly ILogger<PaypalController> _logger;
         private static Payment createPayment;
         private IHttpContextAccessor httpContextAccessor;
-        IConfiguration _configuration;
+        private IConfiguration _configuration;
+
         public PaypalController(ILogger<PaypalController> logger, IHttpContextAccessor accessor, IConfiguration iconfiguration, MyDbContext context) : base(context)
         {
             _logger = logger;
@@ -48,9 +49,8 @@ namespace Project3.Controllers
             return View();
         }
 
-        public async Task<ActionResult> PaymentWithPaypal(string Cancel = null, string blogId = "", string PayerID = "",string guidd="" )
+        public async Task<ActionResult> PaymentWithPaypal(string Cancel = null, string blogId = "", string PayerID = "", string guidd = "")
         {
-           
             var ClientID = _configuration.GetValue<string>("PayPal:Key");
             var ClientSecret = _configuration.GetValue<string>("PayPal:Secret");
             var mode = _configuration.GetValue<string>("PayPal:mode");
@@ -74,27 +74,24 @@ namespace Project3.Controllers
                             paypalRedirectUrl = lnk.href;
                         }
                     }
-                  /*  httpContextAccessor.HttpContext.Session.SetString("payment", createdPayment.id);*/
+                    /*  httpContextAccessor.HttpContext.Session.SetString("payment", createdPayment.id);*/
                     return Redirect(paypalRedirectUrl);
                 }
                 else
                 {
                     var paymentId = createPayment.id;
 
-
-
                     var executedPayment = ExecutePayment(apiContext, payerId, paymentId as string);
-                    
+
                     if (executedPayment.state.ToLower() != "approved")
                     {
-                   
                         return View("PaymentFailed");
                     }
-                    var id = User.Claims.FirstOrDefault(c => c.Type == "id" ).Value;
-               var data=  await   _context.ServiceRegistereds
-                        .Where(s => s.User_Id == int.Parse(id) &&s.Status=="Pending" )
-                        .ToListAsync();
-                    foreach(var i in data)
+                    var id = User.Claims.FirstOrDefault(c => c.Type == "id").Value;
+                    var data = await _context.ServiceRegistereds
+                             .Where(s => s.UserId == int.Parse(id) && s.Status == "Pending")
+                             .ToListAsync();
+                    foreach (var i in data)
                     {
                         i.Status = "Purchased";
                     }
@@ -110,7 +107,9 @@ namespace Project3.Controllers
             }
             return View("SuccessView");
         }
+
         private PayPal.Api.Payment payment;
+
         private Payment ExecutePayment(APIContext apiContext, string payerId, string paymentId)
         {
             var paymentExecution = new PaymentExecution()
@@ -123,6 +122,7 @@ namespace Project3.Controllers
             };
             return this.payment.Execute(apiContext, paymentExecution);
         }
+
         private async Task<Payment> CreatePayment(APIContext apiContext, string redirectUrl, string blogId)
         {
             var itemList = new ItemList()
@@ -133,20 +133,20 @@ namespace Project3.Controllers
             var registered = await _context.ServiceRegistereds
                          .Include(x => x.ServicePrice)
                          .ThenInclude(x => x.Service)
-                         .Where(x => x.User_Id == Int32.Parse(userId))
+                         .Where(x => x.UserId == Int32.Parse(userId))
                          .ToListAsync();
             foreach (var item in registered)
             {
-            itemList.items.Add(new Item()
-            {
-                name =item.ServicePrice.Service.Name,
-                currency = "USD",
-                price = item.ServicePrice.Price.ToString(),
-                quantity = "1",
-                sku = "asd"
-            });
+                itemList.items.Add(new Item()
+                {
+                    name = item.ServicePrice.Service.Name,
+                    currency = "USD",
+                    price = item.ServicePrice.Price.ToString(),
+                    quantity = "1",
+                    sku = "asd"
+                });
             }
-         
+
             var payer = new Payer()
             {
                 payment_method = "paypal"
@@ -161,7 +161,7 @@ namespace Project3.Controllers
             var amount = new Amount()
             {
                 currency = "USD",
-                total = registered.Sum(x=>x.ServicePrice.Price).ToString(),
+                total = registered.Sum(x => x.ServicePrice.Price).ToString(),
             };
 
             var transactionList = new List<Transaction>();

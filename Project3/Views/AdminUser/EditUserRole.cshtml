@@ -1,0 +1,46 @@
+﻿@model User
+
+@{
+    ViewData["Title"] = "editHobbies";
+    Layout = "~/Views/AdminLayout/_Layout.cshtml";
+}
+
+
+<h1>Edit User Role</h1>
+
+
+<hr />
+<div class="row" style="min-height:80vh">
+    <div class="col-md-4">
+        <form asp-action="EditUserRole">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input value="@Model.UserName" class="form-control" readonly />
+                <input name="id" value="@Model.Id"  class="form-control" type="hidden" />
+           
+            </div>
+            <select class="js-example-placeholder-multiple" multiple="multiple" style="width: 300px;">
+                <!-- Your options go here -->
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+                <!-- Add more options as needed -->
+            </select>
+
+            <input type="hidden" asp-for="Id" />
+
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+  

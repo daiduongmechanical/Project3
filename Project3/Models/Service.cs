@@ -8,7 +8,7 @@ namespace Project3.Models
     {
         public string Name { get; set; } = null!;
 
-        public virtual ICollection<ServicePrice> ServicePrices { get; set; } = new List<ServicePrice>();
-        public virtual ICollection<ServiceContent> ServiceContents{ get; set; } = new List<ServiceContent>();
+        public virtual ICollection<ServicePrice>? ServicePrices { get; set; }
+        public virtual ICollection<ServiceContent>? ServiceContents { get; set; }
     }
 }

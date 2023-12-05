@@ -1,22 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Project3.Data;
 using Project3.Dtos;
-using Project3.Models;
 using Project3.Shared;
 using System.Text.RegularExpressions;
-using Twilio.TwiML.Fax;
-
 
 namespace Project3.Controllers
 {
     public class FriendController : BaseController
     {
         public FriendController(MyDbContext context) : base(context)
-        {}
+        { }
+
         [Microsoft.AspNetCore.Mvc.Route("/search")]
         public async Task<IActionResult> Index(string q)
         {
@@ -28,123 +23,117 @@ namespace Project3.Controllers
 
             if (r.IsMatch(q))
             {
-                check = from child in _context.Users.Where(u => u.Phone.Contains(q) && u.Id != int.Parse(id))
-                        join sender in _context.Friends on child.Id equals sender.SendId into s
-                        from sender in s.DefaultIfEmpty()
-                        join reciver in _context.Friends on child.Id equals reciver.RecieveId into re
-                        from reciver in re.DefaultIfEmpty()
-                        select new FriendDto
-                        {
-                            Name = child.UserName,
-                            Avatar = child.Avatar,
-                            Description = child.Description,
-                            id = child.Id,
-                            IsSender = child.Id == sender.SendId ? true : false,
-                            Status = sender.status == null ? (reciver.status == null ? null : reciver.status) : sender.status
-                        };
+                var dataSender = from u in _context.Users.Where(u => u.Phone.Contains(q) && u.Id != int.Parse(id))
+                                 join f in _context.Friends on u.Id equals f.SendId into sender
+                                 from f in sender.DefaultIfEmpty()
+                                 select new FriendDto
+                                 {
+                                     Avatar = u.Avatar,
+                                     Name = u.UserName,
+                                     id = u.Id,
+                                     Description = u.Description,
+                                     sentId = f.SendId.ToString(),
+                                     reciveId = f.RecieveId.ToString(),
+                                     Status = f.status
+                                 };
+                var dataReciever = from u in _context.Users.Where(u => u.Phone.Contains(q) && u.Id != int.Parse(id))
+                                   join f in _context.Friends on u.Id equals f.RecieveId into reciever
+                                   from f in reciever.DefaultIfEmpty()
+                                   select new FriendDto
+                                   {
+                                       Avatar = u.Avatar,
+                                       Name = u.UserName,
+                                       id = u.Id,
+                                       Description = u.Description,
+                                       sentId = f.SendId.ToString(),
+                                       reciveId = f.RecieveId.ToString(),
+                                       Status = f.status
+                                   };
 
+                check = dataSender.Union(dataReciever);
             }
-            else {
-                check = _context.Users.Where(u => u.UserName.Contains(q) && u.Id != int.Parse(id))
-                    .Join(
-                    _context.Friends,
-                    u => u.Id,
-                    f => f.SendId,
-                    (u, f) => new FriendDto
-                    {
-                        Avatar = u.Avatar,
-                        Name = u.UserName,
-                        id = u.Id,
-                        Description = u.Description,
-                        sentId = f.SendId.ToString(),
-                        reciveId = f.RecieveId.ToString(),
-                        Status=f.status
-                     
+            else
+            {
+                var dataSender = from u in _context.Users.Where(u => u.UserName.Contains(q) && u.Id != int.Parse(id))
+                                 join f in _context.Friends on u.Id equals f.SendId into sender
+                                 from f in sender.DefaultIfEmpty()
+                                 select new FriendDto
+                                 {
+                                     Avatar = u.Avatar,
+                                     Name = u.UserName,
+                                     id = u.Id,
+                                     Description = u.Description,
+                                     sentId = f.SendId.ToString(),
+                                     reciveId = f.RecieveId.ToString(),
+                                     Status = f.status
+                                 };
+                var dataReciever = from u in _context.Users.Where(u => u.UserName.Contains(q) && u.Id != int.Parse(id))
+                                   join f in _context.Friends on u.Id equals f.RecieveId into reciever
+                                   from f in reciever.DefaultIfEmpty()
+                                   select new FriendDto
+                                   {
+                                       Avatar = u.Avatar,
+                                       Name = u.UserName,
+                                       id = u.Id,
+                                       Description = u.Description,
+                                       sentId = f.SendId.ToString(),
+                                       reciveId = f.RecieveId.ToString(),
+                                       Status = f.status
+                                   };
 
-                    }
-                    ).Union(
-                     _context.Users.Where(u => u.UserName.Contains(q) && u.Id!=int.Parse(id) )
-                    .Join(
-                    _context.Friends,
-                    u => u.Id,
-                    f => f.RecieveId,
-                    (u, f) => new FriendDto
-
-                    {
-                        Avatar = u.Avatar,
-                        Name = u.UserName,
-                        id = u.Id,
-                        Description = u.Description,
-                        sentId = f.SendId.ToString(),
-                        reciveId = f.RecieveId.ToString(),
-                        Status = f.status
-
-                    }
-                    )
-                    );
-
-        }
+                check = dataSender.Union(dataReciever);
+            }
 
             foreach (var i in check)
             {
-
                 if (result.Count == 0)
                 {
-                    i.IsSender = i.id == int.Parse(i.sentId) ? true : false;
+                    i.IsSender = i.sentId == null || i.id != int.Parse(i.sentId) ? false : true;
                     i.Status = i.sentId != id && i.reciveId != id ? null : i.Status;
                     result.Push(i);
-                    
                 }
                 else
                 {
                     var first = result.Peek();
                     if (first.id != i.id)
                     {
-                        i.IsSender = i.id == int.Parse(i.sentId) ? true : false;
+                        i.IsSender = i.sentId == null || i.id != int.Parse(i.sentId) ? false : true;
                         i.Status = i.sentId != id && i.reciveId != id ? null : i.Status;
                         result.Push(i);
                     }
                     else
                     {
-                        if (i.reciveId==id || i.sentId==id)
+                        if (i.reciveId == id || i.sentId == id)
                         {
                             result.Pop();
-                            i.IsSender = i.id == int.Parse(i.sentId) ? true : false;
+                            i.IsSender = i.sentId == null || i.id != int.Parse(i.sentId) ? false : true;
                             i.Status = i.sentId != id && i.reciveId != id ? null : i.Status;
                             result.Push(i);
-
                         }
                     }
-                  }
-
+                }
             }
 
-          
             return View(result.ToArray());
         }
 
         [HttpGet]
         [Microsoft.AspNetCore.Mvc.Route("/cancel/{sender}/{recieve}/{q?}/{name?}")]
-        public async Task<IActionResult> CancelFriend(int sender, int recieve, string? q, string ? name)
+        public async Task<IActionResult> CancelFriend(int sender, int recieve, string? q, string? name)
         {
             var check = await _context.Friends
                  .FirstOrDefaultAsync(f => f.SendId == sender && f.RecieveId == recieve);
-          
-            
-                _context.Friends.Remove(check);
-                await _context.SaveChangesAsync();
+
+            _context.Friends.Remove(check);
+            await _context.SaveChangesAsync();
             if (q == null)
             {
-                return RedirectToAction("Index", "Profile", new { name = name});
-
+                return RedirectToAction("Index", "Profile", new { name = name });
             }
             else
             {
                 return RedirectToAction("Index", "Friend", new { q = q });
             }
-               
-          
-        
         }
 
         [HttpGet]
@@ -153,42 +142,37 @@ namespace Project3.Controllers
         {
             var check = await _context.Friends.FirstOrDefaultAsync(f => f.SendId == sender && f.RecieveId == recieve);
             check.status = "Accept";
-           await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             if (q == null)
             {
                 ViewData["success"] = "Accept request successfully";
-                return RedirectToAction("Index", "Profile", new { name = name, text = "Require"});
+                return RedirectToAction("Index", "Profile", new { name = name, text = "Require" });
             }
             else
             {
                 ViewData["success"] = "Accept request successfully";
-                return RedirectToAction("Index", "Friend", new {q=q });
+                return RedirectToAction("Index", "Friend", new { q = q });
             }
-
-
         }
 
         [HttpGet]
-		[Microsoft.AspNetCore.Mvc.Route("/add/{sender}/{reciever}/{q?}")]
-		public async Task<IActionResult> AddFriend(int sender, int reciever,  string? q)
+        [Microsoft.AspNetCore.Mvc.Route("/add/{sender}/{reciever}/{q?}")]
+        public async Task<IActionResult> AddFriend(int sender, int reciever, string? q)
         {
-          _context.Friends.Add(new Models.Friend { RecieveId = reciever, SendId = sender });
-         
+            _context.Friends.Add(new Models.Friend { RecieveId = reciever, SendId = sender });
+
             await _context.SaveChangesAsync();
-            if (q==null)
+            if (q == null)
             {
                 var user = await _context.Users.FindAsync(reciever);
                 TempData["success"] = "Add friend was send sucessfully";
-                return RedirectToAction("Index", "Profile",new {name= user.UserName });
+                return RedirectToAction("Index", "Profile", new { name = user.UserName });
             }
             else
             {
                 TempData["success"] = "Add friend was send sucessfully";
-                return RedirectToAction("Index", new {q=q});
+                return RedirectToAction("Index", new { q = q });
             }
         }
-
-
-
     }
 }

@@ -28,33 +28,70 @@
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>
-                        Dashboard
+                        Service
                         <i class="right fas fa-angle-left"></i>
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="~/admin/index.html" class="nav-link">
+                        <a asp-action="Index" asp-controller="AdminService" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>Dashboard v1</p>
+                            <p>Service Management</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="~/admin/index2.html" class="nav-link">
+                        <a asp-action="Index" asp-controller="AdminContent" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>Dashboard v2</p>
+                            <p>Service Content Management </p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="~/admin/index3.html" class="nav-link">
+                        <a asp-action="Index" asp-controller="AdminServicePrice" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>Dashboard v3</p>
+                            <p>Service Price Management</p>
                         </a>
                     </li>
                 </ul>
             </li>
-            
+
         </ul>
+
+
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                 with font-awesome or any other icon font library -->
+            <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>
+                        User
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a asp-action="listUser" asp-controller="AdminUser" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>User Management</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-action="listRole" asp-controller="AdminUser" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Roles Management</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-action="listHobbies" asp-controller="AdminUser" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Hobbies Management</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+
     </nav>
     <!-- /.sidebar-menu -->
 </div>

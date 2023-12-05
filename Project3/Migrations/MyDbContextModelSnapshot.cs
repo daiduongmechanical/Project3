@@ -134,7 +134,7 @@ namespace Project3.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ReceiverId")
+                    b.Property<int?>("ReceiverId")
                         .HasColumnType("int");
 
                     b.Property<int>("SenderId")
@@ -143,15 +143,12 @@ namespace Project3.Migrations
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.Property<string>("status")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages");
                 });
@@ -176,6 +173,15 @@ namespace Project3.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedDate = new DateTime(2023, 12, 4, 22, 59, 20, 195, DateTimeKind.Local).AddTicks(4587),
+                            RoleName = "user",
+                            UpdatedDate = new DateTime(2023, 12, 4, 22, 59, 20, 195, DateTimeKind.Local).AddTicks(4571)
+                        });
                 });
 
             modelBuilder.Entity("Project3.Models.Room", b =>
@@ -190,7 +196,6 @@ namespace Project3.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDate")
@@ -212,10 +217,13 @@ namespace Project3.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("MemberId")
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MemberId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoomId")
+                    b.Property<int?>("RoomId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedDate")
@@ -231,6 +239,36 @@ namespace Project3.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RoomMembers");
+                });
+
+            modelBuilder.Entity("Project3.Models.RoomMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("RoomMessages");
                 });
 
             modelBuilder.Entity("Project3.Models.Service", b =>
@@ -271,15 +309,18 @@ namespace Project3.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Service_Id")
+                    b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("image")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Service_Id");
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("ServiceContents");
                 });
@@ -301,7 +342,7 @@ namespace Project3.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<int>("Service_Id")
+                    b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedDate")
@@ -309,9 +350,9 @@ namespace Project3.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Service_Id");
+                    b.HasIndex("ServiceId");
 
-                    b.ToTable("ServicesPrice");
+                    b.ToTable("ServicePrice");
                 });
 
             modelBuilder.Entity("Project3.Models.ServiceRegistered", b =>
@@ -325,7 +366,7 @@ namespace Project3.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Service_Price_Id")
+                    b.Property<int>("Service_PriceId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -335,14 +376,14 @@ namespace Project3.Migrations
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("User_Id")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Service_Price_Id");
+                    b.HasIndex("Service_PriceId");
 
-                    b.HasIndex("User_Id");
+                    b.HasIndex("UserId");
 
                     b.ToTable("ServiceRegistereds");
                 });
@@ -394,6 +435,9 @@ namespace Project3.Migrations
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -511,27 +555,40 @@ namespace Project3.Migrations
                 {
                     b.HasOne("Project3.Models.User", null)
                         .WithMany("Messages")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Project3.Models.RoomMember", b =>
                 {
                     b.HasOne("Project3.Models.Room", null)
-                        .WithMany("Members")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("members")
+                        .HasForeignKey("RoomId");
 
                     b.HasOne("Project3.Models.User", null)
                         .WithMany("Rooms")
                         .HasForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("Project3.Models.RoomMessage", b =>
+                {
+                    b.HasOne("Project3.Models.Room", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("RoomId");
+
+                    b.HasOne("Project3.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("RoomId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Project3.Models.ServiceContent", b =>
                 {
                     b.HasOne("Project3.Models.Service", "Service")
                         .WithMany("ServiceContents")
-                        .HasForeignKey("Service_Id")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -542,7 +599,7 @@ namespace Project3.Migrations
                 {
                     b.HasOne("Project3.Models.Service", "Service")
                         .WithMany("ServicePrices")
-                        .HasForeignKey("Service_Id")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -553,13 +610,13 @@ namespace Project3.Migrations
                 {
                     b.HasOne("Project3.Models.ServicePrice", "ServicePrice")
                         .WithMany("Registered")
-                        .HasForeignKey("Service_Price_Id")
+                        .HasForeignKey("Service_PriceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project3.Models.User", "User")
                         .WithMany("Registered")
-                        .HasForeignKey("User_Id")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -587,7 +644,9 @@ namespace Project3.Migrations
 
             modelBuilder.Entity("Project3.Models.Room", b =>
                 {
-                    b.Navigation("Members");
+                    b.Navigation("Messages");
+
+                    b.Navigation("members");
                 });
 
             modelBuilder.Entity("Project3.Models.Service", b =>

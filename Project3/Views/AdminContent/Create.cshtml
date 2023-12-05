@@ -1,0 +1,57 @@
+﻿@model Project3.Models.ServiceContent
+
+@{
+    Layout = BaseText.AdminLayout;
+    var service = ViewData["service"] as List<Service>;
+}
+
+
+
+
+<div class="container" style="min-height:100vh;min-height:40vh;background-color:white;padding:0 2rem">
+    <div style="display:flex;justify-content:space-between;align-items:center ">
+        <h1 class="mb-3">Create new content</h1>
+        <div>
+            <a asp-action="Index" role="button" class="btn btn-secondary">Back to List</a>
+        </div>
+
+    </div>
+    <div class="" style="width:100%">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label >serviceId</label>
+                @if (service != null)
+                {
+                    <select required asp-for="ServiceId" class="form-control">
+                        @foreach (var i in service)
+                        {
+                            <option value="@i.Id">@i.Name</option>
+                        }
+
+                    </select>
+                }
+
+
+                <span asp-validation-for="ServiceId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea style="width:100%; height:300px" asp-for="Content" id="editor1" class="form-control"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('editor1');
+</script>
+
+

@@ -1,0 +1,75 @@
+﻿@{
+    var room = Model as Room;
+    var id = User.FindFirst("id").Value;
+    var count = $"Memeber : {room.members.Count()} ";
+
+    var idHandle = $"{room.Name}_s{room.Id}";
+}
+
+<div class="chat" style="height:90vh">
+    <div class="chat-header clearfix" id="rootUrl" data-root-url="@Url.Content("~/")" >
+        <div class="row">
+            <div class=" d-flex align-items-center" style="width:100% ; border-bottom:solid 1px gray">
+                <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
+                    <img style="width:60px; height:60px; border-radius:50%" src="~/images/room.png" alt="avatar">
+                </a>
+                <div class="chat-about">
+                    <h4 class="m-b-0">@room.Name</h4>
+                    <small> @count</small>
+                </div>
+            </div>
+            @*
+            option
+            <div class="col-lg-6 hidden-sm text-right">
+            <a href="javascript:void(0);" class="btn btn-outline-secondary"><i class="fa fa-camera"></i></a>
+            <a href="javascript:void(0);" class="btn btn-outline-primary"><i class="fa fa-image"></i></a>
+            <a href="javascript:void(0);" class="btn btn-outline-info"><i class="fa fa-cogs"></i></a>
+            <a href="javascript:void(0);" class="btn btn-outline-warning"><i class="fa fa-question"></i></a>
+            </div> *@
+
+
+            <div class="chat-history">
+                <ul class="m-b-0" id="messagesList">
+                    @if (room.Messages != null)
+                    {
+                        foreach (var i in room.Messages)
+                        {
+                            if (i.UserId != int.Parse(id))
+                            {
+                                <li class="clearfix">
+                                    <div class="message-data">
+                                        <span class="message-data-time">@BaseMethod.FormatDateTime(i.CreatedDate)</span>
+                                    </div>
+                                    <img style="width:40px;height:40px; border-radius:50%" src="~/images/@i.User.Avatar" alt="avatar"/> 
+                                    <div class="message my-message">@i.Content</div>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="clearfix">
+                                    <div class="message-data text-right">
+                                        <span class="message-data-time">@BaseMethod.FormatDateTime(i.CreatedDate)</span>
+
+                                    </div>
+                                    <div class="message other-message float-right">@i.Content </div>
+                                </li>
+
+                            }
+                        }
+                    }
+
+                </ul>
+            </div>
+            <div class="chat-message clearfix">
+                <div class="input-group mb-0">
+                    <div class="input-group-prepend">
+                    </div>
+                    <input type="hidden" id="room-data" value="@idHandle" >
+                    <input type="hidden" id="send_Id" value="@User.FindFirst("id").Value">
+                    <input type="text" class="form-control" id="room-mess" placeholder="Enter text here...">
+                    <button onclick="sendMessageGroup()"><i class="fa fa-send"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -15,7 +15,19 @@ namespace Project3.Component
         public IViewComponentResult Invoke(string name)
         {
             var user = _context.Users.FirstOrDefault(u => u.UserName == name);
+
             var id = HttpContext.User.FindFirst("id").Value;
+
+           var PendingMess= _context.Messages
+                .Where(m => m.ReceiverId == int.Parse(id) && m.SenderId == user.Id && m.status == "Pending")
+                .ToList();
+
+            foreach(var i in PendingMess)
+            {
+                i.status = "Sent";
+            }
+            _context.SaveChanges();
+
             var message =  _context.Messages
                 .Where(m => m.SenderId == int.Parse(id) && m.ReceiverId == user.Id || m.SenderId == user.Id                 
                 && m.ReceiverId == int.Parse(id)).ToList();
