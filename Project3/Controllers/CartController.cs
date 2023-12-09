@@ -9,101 +9,103 @@ using Project3.Shared;
 
 namespace Project3.Controllers
 {
-    public class CartController : BaseController
-    {
-        public CartController(MyDbContext context) : base(context)
-        {
-        }
+	public class CartController : BaseController
+	{
+		public CartController(MyDbContext context) : base(context)
+		{
+		}
 
-        [HttpGet]
-        public async Task<IActionResult> Index(int? ServiceId)
-        {
-            if (ServiceId != null)
-            {
-                var duration = await _context.ServicePrice.Where(x => x.ServiceId == ServiceId).ToListAsync();
-                List<SelectListItem> customDurationList = duration
-                    .Select(s => new SelectListItem
-                    {
-                        Value = s.Id.ToString(),
-                        Text = $"{s.Duration} Months - ${s.Price}" // Customize the display text as needed
-                    })
-                    .ToList();
-                var selectDuration = new SelectList(customDurationList, "Value", "Text");
-                ViewBag.selectDuration = selectDuration;
+		[HttpGet]
+		public async Task<IActionResult> Index(int? ServiceId)
+		{
+			BaseMethod.ConvertTempData(TempData, ViewData, "success");
+			BaseMethod.ConvertTempData(TempData, ViewData, "error");
+			if (ServiceId != null)
+			{
+				var duration = await _context.ServicePrice.Where(x => x.ServiceId == ServiceId).ToListAsync();
+				List<SelectListItem> customDurationList = duration
+					.Select(s => new SelectListItem
+					{
+						Value = s.Id.ToString(),
+						Text = $"{s.Duration} Months - ${s.Price}" // Customize the display text as needed
+					})
+					.ToList();
+				var selectDuration = new SelectList(customDurationList, "Value", "Text");
+				ViewBag.selectDuration = selectDuration;
 
-                var services = await _context.Services.ToListAsync();
-                var service = await _context.Services.FirstOrDefaultAsync(x => x.Id == ServiceId);
-                var selectService = new SelectList(services, nameof(Service.Id), nameof(Service.Name), service!.Id);
-                ViewBag.selectService = selectService;
-            }
-            else
-            {
-                var service = await _context.Services.ToListAsync();
-                var selectService = new SelectList(service, nameof(Service.Id), nameof(Service.Name));
-                ViewBag.selectService = selectService;
-            }
+				var services = await _context.Services.ToListAsync();
+				var service = await _context.Services.FirstOrDefaultAsync(x => x.Id == ServiceId);
+				var selectService = new SelectList(services, nameof(Service.Id), nameof(Service.Name), service!.Id);
+				ViewBag.selectService = selectService;
+			}
+			else
+			{
+				var service = await _context.Services.ToListAsync();
+				var selectService = new SelectList(service, nameof(Service.Id), nameof(Service.Name));
+				ViewBag.selectService = selectService;
+			}
 
-            if (HttpContext.User.Identity.IsAuthenticated)
-            {
-                var userId = HttpContext.User.FindFirst(c => c.Type == "id").Value;
-                if (userId != null)
-                {
-                    var registered = await _context.ServiceRegistereds
-                        .Include(x => x.ServicePrice)
-                        .Where(x => x.UserId == Int32.Parse(userId))
-                        .ToListAsync();
-                    ViewBag.registered = registered;
-                    if (registered != null && registered.Any())
-                    {
-                        var subtotal = registered.Sum(x => x.ServicePrice.Price);
+			if (HttpContext.User.Identity.IsAuthenticated)
+			{
+				var userId = HttpContext.User.FindFirst(c => c.Type == "id").Value;
+				if (userId != null)
+				{
+					var registered = await _context.ServiceRegistereds
+						.Include(x => x.ServicePrice)
+						.Where(x => x.UserId == Int32.Parse(userId))
+						.ToListAsync();
+					ViewBag.registered = registered;
+					if (registered != null && registered.Any())
+					{
+						var subtotal = registered.Sum(x => x.ServicePrice.Price);
 
-                        ViewBag.Subtotal = subtotal;
-                    }
-                    else
-                    {
-                        ViewBag.Subtotal = 0;
-                    }
-                }
-            }
+						ViewBag.Subtotal = subtotal;
+					}
+					else
+					{
+						ViewBag.Subtotal = 0;
+					}
+				}
+			}
 
-            return View();
-        }
+			return View();
+		}
 
-        [HttpPost]
-        public async Task<IActionResult> AddService(int servicePriceId)
-        {
-            if (servicePriceId != null)
-            {
-                if (HttpContext.User.Identity.IsAuthenticated)
-                {
-                    var userId = HttpContext.User.FindFirst(c => c.Type == "id").Value;
-                    ServiceRegistered newOrder = new()
-                    {
-                        Service_PriceId = servicePriceId,
-                        UserId = Int32.Parse(userId),
-                        Status = "Pending"
-                    };
-                    _context.ServiceRegistereds.Add(newOrder);
-                    await _context.SaveChangesAsync();
-                    // return Ok(userId);
-                }
-            }
-            return RedirectToAction("Index");
-        }
+		[HttpPost]
+		public async Task<IActionResult> AddService(int servicePriceId)
+		{
+			if (servicePriceId != null)
+			{
+				if (HttpContext.User.Identity.IsAuthenticated)
+				{
+					var userId = HttpContext.User.FindFirst(c => c.Type == "id").Value;
+					ServiceRegistered newOrder = new()
+					{
+						Service_PriceId = servicePriceId,
+						UserId = Int32.Parse(userId),
+						Status = "Pending"
+					};
+					_context.ServiceRegistereds.Add(newOrder);
+					await _context.SaveChangesAsync();
+					// return Ok(userId);
+				}
+			}
+			return RedirectToAction("Index");
+		}
 
-        [HttpGet]
-        public async Task<IActionResult> DeleteService(int ServiceRegisteredId)
-        {
-            if (ServiceRegisteredId != null)
-            {
-                var serviceRegistered = await _context.ServiceRegistereds.FirstOrDefaultAsync(x => x.Id == ServiceRegisteredId);
-                if (serviceRegistered != null)
-                {
-                    _context.ServiceRegistereds.Remove(serviceRegistered);
-                    await _context.SaveChangesAsync();
-                }
-            }
-            return RedirectToAction("Index");
-        }
-    }
+		[HttpGet]
+		public async Task<IActionResult> DeleteService(int ServiceRegisteredId)
+		{
+			if (ServiceRegisteredId != null)
+			{
+				var serviceRegistered = await _context.ServiceRegistereds.FirstOrDefaultAsync(x => x.Id == ServiceRegisteredId);
+				if (serviceRegistered != null)
+				{
+					_context.ServiceRegistereds.Remove(serviceRegistered);
+					await _context.SaveChangesAsync();
+				}
+			}
+			return RedirectToAction("Index");
+		}
+	}
 }

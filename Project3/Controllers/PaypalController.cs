@@ -98,14 +98,16 @@ namespace Project3.Controllers
 
                     await _context.SaveChangesAsync();
 
-                    return View("PaymentSuccess");
+                    TempData["success"] = "purchase service successfully";
+                    return RedirectToAction("Index", "Cart");
                 }
             }
             catch (Exception ex)
             {
-                return Ok(ex.Message);
+                TempData["error"] = "Service already purchased! Please check again!";
+                return RedirectToAction("Index", "Cart");
             }
-            return View("SuccessView");
+        
         }
 
         private PayPal.Api.Payment payment;

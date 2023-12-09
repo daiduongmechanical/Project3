@@ -7,6 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Views\AdminContent\Create.cshtml" />
+    <None Include="Views\AdminContent\Delete.cshtml" />
+    <None Include="Views\AdminContent\Edit.cshtml" />
+    <None Include="Views\AdminContent\Index.cshtml" />
+    <None Include="Views\AdminServicePrice\Create.cshtml" />
+    <None Include="Views\AdminServicePrice\Delete.cshtml" />
+    <None Include="Views\AdminServicePrice\Edit.cshtml" />
+    <None Include="Views\AdminServicePrice\Index.cshtml" />
+    <None Include="Views\AdminService\Create.cshtml" />
+    <None Include="Views\AdminService\Delete.cshtml" />
+    <None Include="Views\AdminService\Edit.cshtml" />
+    <None Include="Views\AdminService\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="DeviceDetector.NET" Version="6.1.4" />
     <PackageReference Include="MailKit" Version="4.3.0" />

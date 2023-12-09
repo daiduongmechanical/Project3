@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Project3.Data;
+using Project3.Dtos;
+using Project3.Migrations;
 using Project3.Models;
 using System.Collections.Concurrent;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace Project3.Hubs
 {
@@ -30,15 +33,39 @@ namespace Project3.Hubs
 
         public async Task SendMessageToGroup(string GroupId, string user, string message)
         {
-            var RoomMess = new RoomMessage()
+            try
             {
-                Content = message,
-                UserId = int.Parse(user),
-                RoomId = int.Parse(GroupId.Split("_s")[1])
-            };
-            _context.RoomMessages.Add(RoomMess);
-            await _context.SaveChangesAsync();
-            await Clients.Group(GroupId).SendAsync("ReceiveMessageGroup", user, message);
+                var RoomMess = new RoomMessage
+                {
+                    Content = message,
+                    UserId = int.Parse(user),
+                    RoomId = int.Parse(GroupId.Split("_s")[1])
+                };
+
+                var checkUser = await _context.Users.FindAsync(int.Parse(user));
+
+                // newlest group message
+                var NewMessageGroup = await _context.RoomMessages.
+                   Where(m => m.RoomId == RoomMess.RoomId)
+                   .OrderByDescending(m => m.CreatedDate).FirstAsync();
+
+                _context.Add(RoomMess);
+                await _context.SaveChangesAsync();
+
+                var senderConnectionId = Context.ConnectionId;
+                IEnumerable<string> listExcept = new List<string>() { senderConnectionId };
+
+                await Clients.GroupExcept(GroupId, listExcept)
+                  .SendAsync("ReceiveMessageGroup", checkUser.UserName, checkUser.Avatar, message, GroupId);
+
+                await Clients.GroupExcept(GroupId, listExcept)
+                    .SendAsync("NewGroupMess", NewMessageGroup, GroupId);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in SendMessage: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task CheckOnline(List<string> ListCheck)
@@ -134,10 +161,25 @@ namespace Project3.Hubs
             }
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task<Task> OnConnectedAsync()
         {
             var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var id = Context.User.Claims.FirstOrDefault(c => c.Type == "id").Value;
+            var listRoom = await _context.RoomMembers.Where(r => r.MemberId == int.Parse(id))
+                .Join(_context.Rooms, m => m.RoomId, r => r.Id, (mem, room) => new
+                {
+                    id = $"{room.Name}_s{mem.RoomId}"
+                }).ToListAsync();
+
             userConnections.TryAdd(userId, Context.ConnectionId);
+
+            if (listRoom != null)
+            {
+                foreach (var i in listRoom)
+                {
+                    await Groups.AddToGroupAsync(Context.ConnectionId, i.id);
+                }
+            }
             return base.OnConnectedAsync();
         }
 

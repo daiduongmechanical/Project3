@@ -20,6 +20,7 @@ namespace Project3.Controllers
         public async Task<IActionResult> Index(string? type, string? name)
         {
             BaseMethod.ConvertTempData(TempData, ViewData, "success");
+            BaseMethod.ConvertTempData(TempData, ViewData, "error");
             BaseMethod.ConvertTempData(TempData, ViewData, "joingroup");
             var componment = BaseText.Default;
             string data = "";
@@ -48,7 +49,7 @@ namespace Project3.Controllers
         })
         .ToListAsync();
 
-            var ListGroup = await _context.RoomMembers.Where(m => m.MemberId == int.Parse(id))
+            var ListGroup = await _context.RoomMembers.Where(m => m.MemberId == int.Parse(id) && m.IsMember)
                             .Join(_context.Rooms
                             .Include(r => r.Messages.OrderByDescending(msg => msg.CreatedDate).Take(1)),
                             m => m.RoomId,
@@ -99,6 +100,39 @@ namespace Project3.Controllers
             TempData["success"] = "Create room successfully";
             TempData["joingroup"] = $"{room.Name}_s{room.Id}";
             return RedirectToAction("Index", new { type = "room", name = name + $"_s{room.Id}" });
+        }
+
+        public async Task<IActionResult> AddToGroup(List<int>? users, string groupId)
+        {
+            if (users != null)
+            {
+                foreach (var user in users)
+                {
+                    _context.RoomMembers.Add(new RoomMember { MemberId = user, RoomId = int.Parse(groupId.Split("_s")[1]) });
+                }
+            }
+            await _context.SaveChangesAsync();
+            TempData["success"] = "add to group successfully";
+            return RedirectToAction("Index", new { type = "group", name = groupId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUserGroup(List<int> mem, string roomId)
+        {
+            var id = roomId.Split("_s")[1];
+            if (mem != null)
+            {
+                foreach (var i in mem)
+                {
+                    var member = _context.RoomMembers.FirstOrDefault(r => r.MemberId == i && r.RoomId == int.Parse(id));
+                    member.IsMember = false;
+                }
+                await _context.SaveChangesAsync();
+                TempData["success"] = "Remove user rom group successully";
+                return RedirectToAction("index", new { type = "group", name = roomId });
+            }
+            TempData["error"] = "Have error please try again";
+            return RedirectToAction("index", new { type = "group", name = roomId });
         }
     }
 }

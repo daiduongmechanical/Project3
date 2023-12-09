@@ -51,7 +51,7 @@
                 <th class="text-center">
                     Image
                 </th>
-                <th class="text-center">Content</th>
+                <th class="text-center">Title</th>
                 <th class="text-center">Action</th>
             </tr>
         </thead>
@@ -60,10 +60,29 @@
             {
                 <tr>
                     <td>@item.Id</td>
-                    <td>@item.ServiceId</td>
-                    <td>@item.image</td>
+                    
+                    <td>
+                        @if (item.Service != null)
+                        {
+                            @item.Service.Name
+                        }
+                        else
+                        {
+                            <span>No Service</span>
+                        }
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.image))
+                        {
+                            <img src="~/images/@item.image" alt="Image" class="img-thumbnail" style="max-width: 100px; max-height: 100px;" />
+                        }
+                        else
+                        {
+                            <span>No Image</span>
+                        }
+                    </td>
                     <td class="text-center">
-                        @Html.DisplayFor(modelItem => item.Content)
+                        @Html.DisplayFor(modelItem => item.Title)
                     </td>
                     <td class="text-center">
                         <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-info">Edit</a>

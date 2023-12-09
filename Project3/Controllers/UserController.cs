@@ -31,6 +31,48 @@ namespace Project3.Controllers
         }
 
         [HttpGet]
+        [Route("/api/user/listfriend/{id}/{room}")]
+        public async Task<IActionResult> GetListFriend(int id, string room)
+        {
+            var roomId = room.Split("_s")[1];
+            var roomData = await _context.RoomMembers.Where(r => r.RoomId == int.Parse(roomId)).ToListAsync();
+
+            var result = await _context.Friends
+                .Where(f => f.SendId == id
+                && f.status == "Accept"
+               && !roomData.Select(r => r.MemberId).Contains(f.RecieveId))
+                .Join(
+                _context.Users,
+                f => f.RecieveId,
+                u => u.Id,
+                (f, u) => new FriendDto
+                {
+                    Avatar = u.Avatar,
+                    Name = u.UserName,
+                    id = u.Id,
+                    Description = u.Description,
+                }
+                ).Union(
+                 _context.Friends.Where(f => f.RecieveId == id
+                 && f.status == "Accept"
+                 && !roomData.Select(r => r.MemberId).Contains(f.RecieveId))
+                .Join(
+                _context.Users,
+                f => f.SendId,
+                u => u.Id,
+                (f, u) => new FriendDto
+                {
+                    Avatar = u.Avatar,
+                    Name = u.UserName,
+                    id = u.Id,
+                    Description = u.Description,
+                }
+                )
+                ).ToListAsync();
+            return Ok(result);
+        }
+
+        [HttpGet]
         [AllowAnonymous]
         [Route("ResendPhone/{id}")]
         public async Task<IActionResult> ReSendPone(int id)

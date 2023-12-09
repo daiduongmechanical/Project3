@@ -5,6 +5,18 @@ $(document).ready(function () {
     // Set the scrollTop property to the maximum value
     chatHistory.scrollTop(chatHistory.prop("scrollHeight"));
 });
+
+//join group when page loaded
+$(document).ready(() => {
+    let checkToJoin = document.getElementById("join-group-now");
+    if (checkToJoin != null) {
+        setTimeout(() => {
+            connection.invoke("JoinGroup", checkToJoin.value)
+                .then(() => console.log("join successed"))
+                .catch(err => console.log(err))
+        }, 1000)
+    }
+});
 const currentTime = new Date();
 const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -14,9 +26,11 @@ connection.on("NotifyNewMessage", (check) => {
     if (check.length != 0) {
         let notify = document.querySelector('.message_count')
         notify.style.display = "block";
-        notify.innerHTML = check.length
+
+        notify.innerHTML = Number(notify.innerHTML.trim()) + check.length
 
         let no = document.getElementById('notify-new-message')
+        let messCover = document.createElement("div");
         let data = check.map((e) => `
        <a href="/chat/private/${e[0].user.userName}">
         <div class="media" style="border-bottom:solid 0.5px gray">
@@ -31,24 +45,95 @@ connection.on("NotifyNewMessage", (check) => {
                          </a>
                         `
         ).join();
-        no.innerHTML = data
+        messCover.innerHTML = data
+        no.appendChild(messCover);
     }
+})
+
+//notify new group message
+connection.on("NewGroupMess", (data, groupId) => {
+    let notify = document.querySelector('.message_count')
+    let current = notify.innerHTML;
+    let name = groupId.split('_s')[0]
+
+    notify.innerHTML = Number(notify.innerHTML.trim()) + 1;
+    notify.style.display = "block";
+
+    let no = document.getElementById('notify-new-message')
+    let messCover = document.createElement("div");
+    let newMess = ` <a href="/chat/group/${groupId}">
+        <div class="media" style="border-bottom:solid 0.5px gray">
+                            <img src="/images/room.png" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+                            <div class="media-body" style="width:250px">
+                                <h3 class="dropdown-item-title" stye="foent-size:22px">
+                                    Group : ${name}</h3>
+                                <p class="text-sm text-in-p">${data.content}</p>
+                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                            </div>
+                        </div>
+                         </a> `
+    let currentData = { group: groupId, data: data };
+    messCover.innerHTML = newMess
+    no.appendChild(messCover);
+
+    // handle add data to session
+    if (sessionStorage.getItem("group_notice") == null) {
+        sessionStorage.setItem("group_notice", JSON.stringify([currentData]))
+    } else {
+        let count = 0;
+        let position = 0;
+
+        let getData = JSON.parse(sessionStorage.getItem("group_notice"));
+        getData.forEach((x, i) => {
+            if (x.group == groupId) {
+                count++;
+                position = i;
+            }
+        })
+        if (count == 0) {
+            getData = [...getData, currentData];
+        } else {
+            getData[position] = currentData
+        }
+        sessionStorage.setItem("group_notice", JSON.stringify(getData))
+    }
+})
+
+//handle recieve newmess from group
+connection.on("ReceiveMessageGroup", (name, avatar, message, GroupId) => {
+    let li = document.createElement("li");
+
+    let dataAddText = ` <li class="clearfix">
+                                            <div class="message-data">
+                                                <span class="message-data-time">${formattedTime} , Today</span>
+
+                                            </div>
+                                            <img style="width:40px;height:40px; border-radius:50%" src="/images/${avatar}" alt="avatar">
+                                            <div class="message my-message">${message}</div>
+                                        </li> `
+
+    li.innerHTML = dataAddText
+
+    document.getElementById("messagesList").appendChild(li);
+
+    var chatHistory = $(".chat-history");
+
+    // Set the scrollTop property to the maximum value
+    chatHistory.scrollTop(chatHistory.prop("scrollHeight"));
 })
 
 // handle check olnine status
 
 connection.on("CheckOnlineResult", (data) => {
-    console.log(data)
     data.forEach(d => {
         var handle = document.querySelector(`[data-name="${d.name}"]`)
         if (d.isOnline) {
-            handle.classList.remove('online')
             handle.classList.remove('offline')
             handle.classList.add('online')
             handle.innerHTML = "  Online"
         } else {
             handle.classList.remove('online')
-            handle.classList.remove('offline')
+
             handle.classList.add('offline')
             handle.innerHTML = "  Offline"
         }
@@ -63,7 +148,7 @@ connection.on("ReceiveMessage", (user, message) => {
     let senid = document.getElementById('reciveId').value
     let redid = document.getElementById('send_Id').value
 
-    $.get(`${window.location.href.split('/chat')[0]}/api/chat/up/${senid}/${redid}`);
+    $.get(`${window.location.href.split('/chat')[0]} /api/chat / up / ${senid} /${redid}`);
     let text = `  <li class="clearfix">
                                             <div class="message-data">
                                                 <span class="message-data-time">${formattedTime} , Today</span>
@@ -72,7 +157,7 @@ connection.on("ReceiveMessage", (user, message) => {
                                             <img style="width:40px;height:40px; border-radius:50%" src="/images/${avatar}" alt="avatar">
                                             <div class="message my-message">${message}</div>
                                         </li>`
-    li.className = "clearfix"
+
     li.innerHTML = text
     document.getElementById("messagesList").appendChild(li);
     var chatHistory = $(".chat-history");
@@ -158,11 +243,47 @@ const checkMess = () => {
     connection.invoke("NotifyMessage", name.trim(), id.trim()).catch(err => console.error(err.toString()));
 }
 
+//cation after 2s page load successed
+
 $(document).ready(() => {
     setTimeout(function () {
         checkMess()
-    }, 2000);
+    }, 1000);
 })
+
+$(document).ready(
+    () => {
+        setTimeout(function () {
+            if (sessionStorage.getItem("group_notice") != null) {
+                let data = JSON.parse(sessionStorage.getItem("group_notice"));
+
+                if (data.length != 0) {
+                    let notify = document.querySelector('.message_count');
+
+                    notify.innerHTML = Number(notify.innerHTML.trim()) + data.length;
+                    notify.style.display = "block";
+
+                    let no = document.getElementById('notify-new-message')
+                    data.forEach(x => {
+                        let messCover = document.createElement("div");
+                        let newMess = ` <a href="/chat/group/${x.group}">
+        <div class="media" style="border-bottom:solid 0.5px gray">
+                            <img src="/images/${x.data.user.avatar}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+                            <div class="media-body" style="width:250px">
+                                <h3 class="dropdown-item-title" stye="foent-size:22px">
+                                    Group : ${x.group.split('_s')[0]}</h3>
+                                <p class="text-sm text-in-p">${x.data.content}</p>
+                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                            </div>
+                        </div>
+                         </a> `
+                        messCover.innerHTML = newMess
+                        no.appendChild(messCover);
+                    })
+                }
+            }
+        }, 1100);
+    })
 
 // check status on line
 
@@ -178,6 +299,7 @@ const checkOnlineStatus = () => {
     connection.invoke("CheckOnline", list).catch((err) => { console.log(err) });
 }
 
+//check account is onile each 5s
 setInterval(checkOnlineStatus, 5000)
 
 // set enter sent message
@@ -194,6 +316,30 @@ if (messageCheck != null) {
     })
 }
 
+//remove room notify
+
+let checkRooomAccess = document.getElementById('checkAccessGroup');
+
+if (checkRooomAccess != null) {
+    console.log(1)
+    let getSeesionData = sessionStorage.getItem("group_notice");
+    let position = 10000;
+    if (getSeesionData != null) {
+        let data = JSON.parse(getSeesionData);
+
+        data.forEach((e, i) => {
+            if (e.group == checkRooomAccess.value) {
+                position = i;
+            }
+        });
+
+        if (position != 10000) {
+            data.splice(position, 1);
+            sessionStorage.setItem("group_notice", JSON.stringify(data))
+        }
+    }
+}
+
 if (roomMess != null) {
     roomMess.addEventListener('keyup', (e) => {
         if (e.keyCode == 13) {
@@ -202,11 +348,4 @@ if (roomMess != null) {
             }
         }
     })
-}
-
-let joinData = $("#join-data").val();
-if (joinData != null) {
-    connection.invoke("JoinGroup", joinData)
-        .then(() => console.log("join successed"))
-        .catch(err => console.log(err))
 }

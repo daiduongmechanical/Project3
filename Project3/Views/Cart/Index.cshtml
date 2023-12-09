@@ -1,4 +1,15 @@
-﻿
+﻿@if (ViewData.ContainsKey("success"))
+{
+    <p class="alert alert-warning d-none  " id="success-notify-toast" role="alert">@ViewData["success"]</p>
+
+}
+
+@if (ViewData.ContainsKey("error"))
+{
+    <p class="alert alert-warning d-none " id="error-notify-toast" role="alert">@ViewData["error"]</p>
+
+}
+
 
 @{
     ViewData["Title"] = "Cart";
@@ -36,29 +47,11 @@
             <th>Price($)</th>
         </tr>
     </thead>
-   @*  <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @item.ServiceName
-                </td>
-                <td>
-                    @item.Duration months
-                </td>
-                <td>
-                    @item.Price
-                </td>
-                <td>
-                    @item.Subtotal
-                </td>
-            </tr>
-        }
-    </tbody> *@
+  
     <tbody>
         @if (ViewBag.registered != null )
         {
-            @foreach (var item in ViewBag.registered)
+            @foreach (var item in ViewBag.registered as List<ServiceRegistered>)
             {
                 <tr>
                     <td>

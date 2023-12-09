@@ -8,6 +8,8 @@ namespace Project3.Models
     {
         public int ServiceId { get; set; }
         public virtual Service? Service { get; set; }
+        public string Title { get; set; } 
+
 
         [DataType(DataType.Text)]
         public string Content { get; set; } = null!;

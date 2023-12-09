@@ -1,34 +1,136 @@
 ﻿@{
     var room = Model as Room;
     var id = User.FindFirst("id").Value;
-    var count = $"Memeber : {room.members.Count()} ";
+    var count =room==null ?"": $"Memeber : {room.members.Count()} ";
 
     var idHandle = $"{room.Name}_s{room.Id}";
 }
+
+<input id="join-group-now" value="@idHandle" type="hidden" />
+
+<style>
+
+    input.checkbox_size{
+        width: 20px;
+        height:20px;
+
+    }
+
+
+
+    #container {
+        position: relative;
+    }
+
+    #emoji-button {
+        margin-right: 10px;
+    }
+
+    #emoji-box {
+        display: none;
+        position: absolute;
+        left: -150px; /* Adjust this value as needed */
+        bottom: 40px;
+        background-color: #f9f9f9;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+</style>
+
+
+@* //modal manage member *@
+
+<div class="modal fade" id="manager_member" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Management Group Member</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="DeleteUserGroup" method="post">
+                @if(room.members !=null){
+                    foreach (var i in room.members)
+                    {
+                        if (!i.IsAdmin)
+                        {
+                            var sl = $"select_s{i.user.Id}";
+                            <div class="d-flex align-items-center justify-content-around mb-2" style="border-bottom:0.5px solid gray">
+                                <label style="width:100%" for="@sl" class="d-flex align-items-center">
+                                    <img src="~/images/@i.user.Avatar" style="width:50px;height:50px; border-radius:50%" />
+                                    <span class="ml-3 " style="font-size:20px">@i.user.UserName</span>
+                                </label>
+                                <input id="@sl" name="mem[]" value="@i.MemberId" class="checkbox_size" type="checkbox" />
+                            </div>
+                        }
+                    }
+                        <input name="roomId" value="@idHandle" id="checkAccessGroup"  type="hidden" />
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Remove User</button>
+                        </div>
+
+                }
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@* //modal add to group *@
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add friend to your group</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"  >
+
+                <form asp-action="AddToGroup" style="min-height:50vh; max-width:80vh; overflow-y:scroll" id="data-action">
+                    
+                </form>
+
+            </div>
+          
+        </div>
+    </div>
+</div>
+
 
 <div class="chat" style="height:90vh">
     <div class="chat-header clearfix" id="rootUrl" data-root-url="@Url.Content("~/")" >
         <div class="row">
             <div class=" d-flex align-items-center" style="width:100% ; border-bottom:solid 1px gray">
-                <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
+                <div href="javascript:void(0);">
                     <img style="width:60px; height:60px; border-radius:50%" src="~/images/room.png" alt="avatar">
-                </a>
-                <div class="chat-about">
+                </div>
+                <div style="cursor:pointer" class="chat-about" data-toggle="modal" data-target="#manager_member" id="room-chat-header">
                     <h4 class="m-b-0">@room.Name</h4>
                     <small> @count</small>
                 </div>
+
+  
+                    <i class=" fas fa-user-plus "
+                       data-trans="@id"
+                       data-toggle="modal" 
+                       data-target="#exampleModal"
+                       data-room="@idHandle"
+                    id="add-to-group" 
+                    style="font-size:30px; margin-left:auto; margin-right:100px;cursor:pointer"></i>
+
             </div>
-            @*
-            option
-            <div class="col-lg-6 hidden-sm text-right">
-            <a href="javascript:void(0);" class="btn btn-outline-secondary"><i class="fa fa-camera"></i></a>
-            <a href="javascript:void(0);" class="btn btn-outline-primary"><i class="fa fa-image"></i></a>
-            <a href="javascript:void(0);" class="btn btn-outline-info"><i class="fa fa-cogs"></i></a>
-            <a href="javascript:void(0);" class="btn btn-outline-warning"><i class="fa fa-question"></i></a>
-            </div> *@
+            
+         
+           
 
-
-            <div class="chat-history">
+            <div class="chat-history" id="@idHandle">
                 <ul class="m-b-0" id="messagesList">
                     @if (room.Messages != null)
                     {
@@ -37,6 +139,7 @@
                             if (i.UserId != int.Parse(id))
                             {
                                 <li class="clearfix">
+                                   
                                     <div class="message-data">
                                         <span class="message-data-time">@BaseMethod.FormatDateTime(i.CreatedDate)</span>
                                     </div>
@@ -67,9 +170,50 @@
                     <input type="hidden" id="room-data" value="@idHandle" >
                     <input type="hidden" id="send_Id" value="@User.FindFirst("id").Value">
                     <input type="text" class="form-control" id="room-mess" placeholder="Enter text here...">
+
+                    <div id="container">
+                        <button id="emoji-button" style="height:100%" onclick="toggleEmojiBox()">😊</button>
+
+                        <div id="emoji-box">
+                            @for (var i = 128512; i < 128568; i++)
+                            {
+                                var e = $"&#{i};";
+                                <span style="cursor:pointer ;font-size:18px" class="icon-emoji" onclick="addEmo(event)">@Html.Raw(e)</span>
+                            }
+
+
+                        </div>
+                    </div>
                     <button onclick="sendMessageGroup()"><i class="fa fa-send"></i></button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://unpkg.com/%40popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script>
+    tippy('#add-to-group', {
+        content: 'Add friedn to group',
+    });
+
+
+
+        function toggleEmojiBox() {
+            var emojiBox = document.getElementById('emoji-box');
+            emojiBox.style.display = (emojiBox.style.display === 'none' || emojiBox.style.display === '') ? 'block' : 'none';
+        }
+
+    const addEmo = (e) => {
+        let data = document.getElementById("room-mess");
+        let x = e.target.innerText;
+        data.value += x
+
+
+    }
+
+    
+
+
+</script>

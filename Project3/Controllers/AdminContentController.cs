@@ -33,19 +33,40 @@ namespace Project3.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ServiceContent serviceContent)
+
+        public async Task<IActionResult> Create(ContentDto data)
         {
+
             if (ModelState.IsValid)
             {
-                _context.ServiceContents.Add(serviceContent);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            var service = await _context.Services.ToListAsync();
-            ViewData["service"] = service;
-            return View(serviceContent);
-        }
+                var imageName = await BaseMethod.UploadImage(data.Images);
+                if (imageName.Result != true)
+                {
+                    TempData["error"] = "Error has occured uploading image. Please try again! ";
+                    return RedirectToAction("Index");
+                }
 
+                var content = new ServiceContent()
+                {
+                    ServiceId = data.ServiceId,
+                    image = imageName.Text,
+
+                    Content = data.Content,
+                    Title = data.Title,
+                   
+
+                };
+                _context.Add(content);
+              await  _context.SaveChangesAsync();
+                TempData["success"] = "processed successfully ";
+                return RedirectToAction("Index");
+
+
+
+               
+            }
+            return View();
+        }
         public IActionResult Edit(int id)
         {
             var serviceContent = _context.ServiceContents.Find(id);

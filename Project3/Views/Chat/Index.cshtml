@@ -2,7 +2,13 @@
 @model  IEnumerable<ListChatDto>
 @if (ViewData.ContainsKey("success"))
 {
-    <p class="alert alert-warning" role="alert">@ViewData["success"]</p>
+    <p class="alert alert-warning d-none  " id="success-notify-toast" role="alert">@ViewData["success"]</p>
+
+}
+
+@if (ViewData.ContainsKey("error"))
+{
+    <p class="alert alert-warning d-none " id="error-notify-toast" role="alert">@ViewData["success"]</p>
 
 }
 
@@ -39,17 +45,23 @@
                             foreach(var i in Model)
                             {
                                 var href = i.Isprivate ? $"/chat/private/{i.name}" : $"/chat/group/{i.name}_s{i.Id}";
+                                var group = i.Isprivate ? "" : $"{i.name}_s{i.Id}";
 
-                                <a href=@href>
-                                <li class="clearfix"   
+                                
+                                <li class="clearfix "
+                                
                                     style="border-bottom:solid 0.5px gray ; margin-bottom: 5px; padding-bottom:0 ">
+                                    <a href=@href >
                                     <img src="~/images/@i.avatar" alt="avatar">
                                     <div class="about " style="width:calc(100% - 45px)">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <h5 class="text-black name-check-online">@i.name</h5>
-                                            <i class=" fa fa-circle status-dot online" data-name="@i.name" style="font-size:15px"></i>
-                                        </div>
-                                        @if(i.Isprivate){
+                                                @if(i.Isprivate){
+                                                      <i class=" fa fa-circle status-dot " data-name="@i.name" style="font-size:15px"></i>
+                                       
+                                                }
+                                            </div>
+                                            @if(i.Isprivate){
                                                 if(i.message!=null)
                                                 {
                                                     <p class="text-black" style="margin-bottom:5px">@i.message.Content</p>
@@ -64,9 +76,9 @@
                                             }
                                             
                                     </div>
-                                           
+                                    </a>
                                 </li>
-                                </a>
+                               
                             }
                         }
                       
@@ -83,20 +95,6 @@
                 }else{
                     <div class="chat" style="height:90vh">   </div>
                 }
-
-
-           
-
-                          @*   
-                              option
-                              <div class="col-lg-6 hidden-sm text-right">
-                                <a href="javascript:void(0);" class="btn btn-outline-secondary"><i class="fa fa-camera"></i></a>
-                                <a href="javascript:void(0);" class="btn btn-outline-primary"><i class="fa fa-image"></i></a>
-                                <a href="javascript:void(0);" class="btn btn-outline-info"><i class="fa fa-cogs"></i></a>
-                                <a href="javascript:void(0);" class="btn btn-outline-warning"><i class="fa fa-question"></i></a>
-                            </div> *@
-
-        
 
 
             </div>

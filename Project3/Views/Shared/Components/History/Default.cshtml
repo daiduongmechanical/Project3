@@ -1,0 +1,29 @@
+﻿@{
+    var service = Model as List<ServiceRegistered>;
+}
+
+<h2>Purchase History</h2>
+
+<table style="width: 100%" class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th class ="text-center">Service</th>
+            <th class="text-center">Price($)</th>
+            <th class="text-center">Duration(Months)</th>
+            <th class="text-center">Register Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        @foreach (var order in service)
+        {
+            <tr>
+                <td class="text-center">@order.ServicePrice.Service.Name</td>
+                <td class="text-center">@order.ServicePrice.Price.ToString("C")</td>
+                <td class="text-center">@order.ServicePrice.Duration</td>
+                <td class="text-center">@order.CreatedDate</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

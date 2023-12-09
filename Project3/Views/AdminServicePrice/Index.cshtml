@@ -58,7 +58,16 @@
                     <tr>
                         <td>@price.Id</td>
                     <td>@price.Price</td>
-                    <td>@price.ServiceId</td>
+                        <td>
+                            @if (price.Service != null)
+                            {
+                                @price.Service.Name
+                            }
+                            else
+                            {
+                                <span>No Service</span>
+                            }
+                        </td>
                     <td>@price.Duration</td>
                     <td class="text-center">
                         <a asp-action="Edit" asp-route-id="@price.Id" role="button" class="btn btn-info">Edit</a>

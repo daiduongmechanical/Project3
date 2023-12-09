@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project3.Data;
 
@@ -11,9 +12,11 @@ using Project3.Data;
 namespace Project3.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231208143338_v3333")]
+    partial class v3333
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -178,9 +181,9 @@ namespace Project3.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 777, DateTimeKind.Local).AddTicks(6430),
+                            CreatedDate = new DateTime(2023, 12, 8, 21, 33, 38, 782, DateTimeKind.Local).AddTicks(4615),
                             RoleName = "user",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 777, DateTimeKind.Local).AddTicks(6414)
+                            UpdatedDate = new DateTime(2023, 12, 8, 21, 33, 38, 782, DateTimeKind.Local).AddTicks(4597)
                         });
                 });
 
@@ -465,78 +468,6 @@ namespace Project3.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 5,
-                            Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 778, DateTimeKind.Local).AddTicks(7955),
-                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "vainhoo@gmail.com",
-                            IsBlocked = false,
-                            Password = "$2a$11$zBCCImjNJrZiiX6k5qPEgu2yU9wlRJOs7h.p8Lg7qCz6/oc6/HPHu",
-                            Phone = "+84234456678",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 778, DateTimeKind.Local).AddTicks(7949),
-                            UserName = "xhaka",
-                            Verified = true
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 981, DateTimeKind.Local).AddTicks(5776),
-                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "vainhoo@gmail.com",
-                            IsBlocked = false,
-                            Password = "$2a$11$hmX3qOT0LHd5UCpA6m588ObGV4/LU3n.OVYet5O3RI7v7p97uc2UC",
-                            Phone = "+8477885566",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 981, DateTimeKind.Local).AddTicks(5755),
-                            UserName = "saka",
-                            Verified = true
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 183, DateTimeKind.Local).AddTicks(840),
-                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "vainhoo@gmail.com",
-                            IsBlocked = false,
-                            Password = "$2a$11$tG71xIqt1ADXcQg3hqW8OeLS7cqF8HG7ybQhwIdeYLszftZWsO8F.",
-                            Phone = "+84987765543",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 183, DateTimeKind.Local).AddTicks(812),
-                            UserName = "rose",
-                            Verified = true
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 377, DateTimeKind.Local).AddTicks(2923),
-                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "vainhoo@gmail.com",
-                            IsBlocked = false,
-                            Password = "$2a$11$ShC5/ojREsfdduaad3EtJue0z3X1HuMkNjgaRNAKQwvXGEGwljlae",
-                            Phone = "+8422665544",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 377, DateTimeKind.Local).AddTicks(2905),
-                            UserName = "atetar",
-                            Verified = true
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 564, DateTimeKind.Local).AddTicks(6929),
-                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "vainhoo@gmail.com",
-                            IsBlocked = false,
-                            Password = "$2a$11$BL2bDiW/XOe08E.3qTXMXOP7LmUnp04LzhRv.7pVqA6qxB/BcQfBC",
-                            Phone = "+84987865454",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 564, DateTimeKind.Local).AddTicks(6900),
-                            UserName = "enketia",
-                            Verified = true
-                        });
                 });
 
             modelBuilder.Entity("Project3.Models.UserRole", b =>

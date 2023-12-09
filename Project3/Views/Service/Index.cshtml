@@ -1,0 +1,87 @@
+﻿@model IEnumerable<ServiceContent>
+@{
+    var first = Model.First();
+  var  serviceId = ViewData["serviceid"];
+}
+<link href="~/fe/css/style-service.css" rel="stylesheet">
+<div class="single-news">
+    <div class="">
+        <div class="row">
+            @if (Model != null)
+            {
+
+
+                <div class="col-lg-8">
+
+                <div class="sn-container">
+                    <div class="sn-img">
+                        <img src="~/images/@first.image" />
+                    </div>
+                    <div class="sn-content">
+                        <h1 class="sn-title">@first.Title</h1>
+                        @Html.Raw(first.Content)
+                    </div>
+                </div>
+
+
+
+             
+                          
+
+                       
+                      
+                    </div>
+                
+          
+
+            }
+            <div class="col-lg-4">
+                <div class="sidebar">
+                    <div class="sidebar-widget">
+                        <h2 class="sw-title">In This Category</h2>
+                        <div class="news-list">
+
+
+                            @foreach (var i in Model)
+                            {
+                                var link = $"/service/{serviceId}/{i.Id}";
+                                if (i.Id != first.Id)
+                                {
+
+
+                                    <div class="nl-item">
+                                        <div class="nl-img">
+                                            <img src="~/images/@i.image" />
+                                        </div>
+                                        <div class="nl-title">
+                                            <a href="@link">@i.Title</a>
+                                        </div>
+                                    </div>
+
+
+                                  
+                                }
+
+                            }
+
+                          
+
+
+                  
+                        </div>
+                    </div>
+
+                    <div class="sidebar-widget">
+                        <div class="image">
+                            <a href="https://htmlcodex.com"><img src="img/ads-2.jpg" alt="Image"></a>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Single News End-->    

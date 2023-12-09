@@ -1,6 +1,27 @@
 ﻿
 @{
     var data = Model as ChatDto;
+
+    <style>
+                #container {
+                    position: relative;
+                }
+
+                #emoji-button {
+                    margin-right: 10px;
+                }
+
+                #emoji-box {
+                    display: none;
+                    position: absolute;
+                    left: -150px; /* Adjust this value as needed */
+                   bottom:40px;
+                    background-color: #f9f9f9;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                }
+    </style>
 }
 
 <div class="chat" style="height:90vh"> 
@@ -64,9 +85,39 @@
                             <input type="hidden" id="reciveId" value="@data.User.Id">
                             <input type="hidden" id="send_Id" value="@User.FindFirst("id").Value">
                             <input  type="text" class="form-control" id="messageInput" placeholder="Enter text here...">
+
+                    <div id="container">
+                        <button id="emoji-button" style="height:100%" onclick="toggleEmojiBox()">😊</button>
+
+                        <div id="emoji-box">
+                            @for (var i = 128512; i < 128568; i++)
+                            {
+                                var e = $"&#{i};";
+                                <span style="cursor:pointer ;font-size:18px"  class="icon-emoji" onclick="addEmo(event)">@Html.Raw(e)</span>
+                            }
+                          
+                           
+                        </div>
+                    </div>
                             <button onclick="sendMessage()"><i class="fa fa-send"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+
+<script>
+    function toggleEmojiBox() {
+        var emojiBox = document.getElementById('emoji-box');
+        emojiBox.style.display = (emojiBox.style.display === 'none' || emojiBox.style.display === '') ? 'block' : 'none';
+    }
+
+    const addEmo = (e) => {
+        let data = document.getElementById("messageInput");
+        let x = e.target.innerText;
+       data.value+=x
+    
+
+    }
+</script>

@@ -6,6 +6,7 @@
     height: 40px;
     width: 40px;
 }
+
 .msg_cotainer {
     margin-top: auto;
     margin-bottom: auto;
@@ -15,6 +16,7 @@
     padding: 10px;
     position: relative;
 }
+
 .user_img {
     height: 70px;
     width: 70px;
@@ -133,9 +135,8 @@
 .chat .chat-history {
     padding: 20px;
     border-bottom: 2px solid #fff;
-    height :65vh;
-    overflow-y:scroll;
-
+    height: 65vh;
+    overflow-y: scroll;
 }
 
     .chat .chat-history ul {
@@ -151,12 +152,10 @@
                 margin-bottom: 0px
             }
 
-
-
-        .chat .chat-history .message-data img {
-            border-radius: 40px;
-            width: 40px
-        }
+    .chat .chat-history .message-data img {
+        border-radius: 40px;
+        width: 40px
+    }
 
     .chat .chat-history .message-data-time {
         color: #434651;
@@ -165,27 +164,21 @@
 
     .chat .chat-history .message {
         color: #444;
-        padding:5px 20px;
+        padding: 5px 20px;
         line-height: 26px;
         font-size: 16px;
         display: inline-block;
         position: relative
-
     }
 
-       
     .chat .chat-history .my-message {
         background: #efefef
     }
-
-       
 
     .chat .chat-history .other-message {
         background: #e8f1f3;
         text-align: right;
     }
-
-     
 
 .chat .chat-message {
     padding: 20px
@@ -214,9 +207,6 @@
 .float-right {
     float: right
 }
-
-
-
 
 @media only screen and (max-width: 767px) {
     .chat-app .people-list {
@@ -268,4 +258,19 @@
         height: calc(100vh - 350px);
         overflow-x: auto
     }
+}
+
+.toast-success-notify {
+    font-size: 18px;
+    padding: 20px 25px;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.toast-error-notify {
+    background-color: #e84c3d;
+    font-size: 18px;
+    padding: 20px 25px;
+    border-radius: 5px;
+    box-sizing: border-box;
 }

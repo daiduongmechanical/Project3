@@ -10,7 +10,7 @@ namespace Project3.Data.EntityTypeConfiguration
         {
             builder.HasOne(r => r.User)
                 .WithMany()
-                .HasForeignKey(r => r.RoomId);
+                .HasForeignKey(r => r.UserId);
         }
     }
 }

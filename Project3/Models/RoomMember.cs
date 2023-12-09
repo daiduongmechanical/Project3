@@ -12,9 +12,14 @@ namespace Project3.Models
 
         public bool IsAdmin { get; set; }
 
+        public bool IsMember { get; set; }
+
+        public User? user { get; set; }
+
         public RoomMember()
         {
             IsAdmin = false;
+            IsMember = true;
         }
     }
 }

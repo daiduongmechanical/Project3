@@ -13,16 +13,13 @@ namespace Project3.Controllers
         }
 
         [Route("/test/chat/{name}")]
-        public IActionResult Index(string name)
+        public async Task<IActionResult> Index(string name)
         {
-            var GroupName = name.Split("_s")[0];
-            var GroupId = name.Split("_s")[1];
-
-            var data = _context.Rooms
-                .Include(m => m.members)
-                .Include(r => r.Messages).ThenInclude(m => m.User)
-                .Where(r => r.Id == int.Parse(GroupId))
-                .ToList();
+            var id = name.Split("_s")[1];
+            var data = await _context.RoomMessages.
+                Include(m => m.User).
+                   Where(m => m.RoomId == int.Parse(id))
+                   .OrderByDescending(m => m.CreatedDate).FirstAsync();
 
             return Ok(data);
         }
