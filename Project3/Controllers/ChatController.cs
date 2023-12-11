@@ -5,7 +5,6 @@ using Project3.Dtos;
 using Project3.Hubs;
 using Project3.Models;
 using Project3.Shared;
-using Twilio.TwiML.Messaging;
 
 namespace Project3.Controllers
 {
@@ -95,7 +94,7 @@ namespace Project3.Controllers
             await _context.Rooms.AddAsync(room);
             await _context.SaveChangesAsync();
 
-            await _context.RoomMembers.AddAsync(new RoomMember { IsAdmin = true, MemberId = int.Parse(userid), RoomId = room.Id });
+            await _context.RoomMembers.AddAsync(new RoomMember { Role = "Admin", MemberId = int.Parse(userid), RoomId = room.Id });
             await _context.SaveChangesAsync();
             TempData["success"] = "Create room successfully";
             TempData["joingroup"] = $"{room.Name}_s{room.Id}";
@@ -106,9 +105,21 @@ namespace Project3.Controllers
         {
             if (users != null)
             {
+                var id = int.Parse(groupId.Split("_s")[1]);
+                var current = await _context.RoomMembers.Where(r => r.RoomId == id)
+                    .ToListAsync();
                 foreach (var user in users)
                 {
-                    _context.RoomMembers.Add(new RoomMember { MemberId = user, RoomId = int.Parse(groupId.Split("_s")[1]) });
+                    var check = current.FirstOrDefault(c => c.MemberId == user);
+                    if (check == null)
+                    {
+                        _context.RoomMembers.Add(new RoomMember { MemberId = user, RoomId = int.Parse(groupId.Split("_s")[1]) });
+                    }
+                    else
+                    {
+                        check.IsMember = true;
+                        _context.RoomMembers.Update(check);
+                    }
                 }
             }
             await _context.SaveChangesAsync();
@@ -133,6 +144,28 @@ namespace Project3.Controllers
             }
             TempData["error"] = "Have error please try again";
             return RedirectToAction("index", new { type = "group", name = roomId });
+        }
+
+        [HttpGet]
+        [Route("/ChangeRole/{roomId}/{userId}/{role}")]
+        public async Task<IActionResult> ChangeRole(string roomId, int userId, string role)
+        {
+            var id = roomId.Split("_s")[1];
+            var data = await _context.RoomMembers.FirstOrDefaultAsync(m => m.MemberId == userId && m.RoomId == int.Parse(id));
+            data!.Role = BaseMethod.UpperFirst(role);
+            await _context.SaveChangesAsync();
+            TempData["success"] = "Update role for user successfully";
+            return RedirectToAction("index", new { type = "group", name = roomId });
+        }
+
+        [HttpGet]
+        [Route("/leavegroup/{userId}/{groupId}")]
+        public async Task<IActionResult> LeaveGroup(int userId, int groupId)
+        {
+            var check = await _context.RoomMembers.FirstOrDefaultAsync(r => r.RoomId == groupId && r.MemberId == userId);
+            check.IsMember = false;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("index");
         }
     }
 }

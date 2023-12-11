@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project3.Data;
 using Project3.Dtos;
@@ -19,14 +20,28 @@ namespace Project3.Controllers
             return View();
         }
 
-        // ok
-        public async Task<IActionResult> listUser()
+        [Authorize(Policy = "AdminOrManager")]
+        public async Task<IActionResult> ListUser()
         {
-            var listUser = await _context.Users.ToListAsync();
+            var listUser = await _context.Users
+                .Include(u => u.Roles).ThenInclude(role => role.Role)
+               .Where(u => !u.Roles.Select(m => m.Role.RoleName).Any(roleName => roleName == "admin"
+               || roleName == "manager"))
+                .ToListAsync();
             return View(listUser);
         }
 
-        //ok
+        [Authorize(Policy = "ManagerOnly")]
+        public async Task<IActionResult> ListAdmin()
+        {
+            var listAdmin = await _context.Users
+                .Include(u => u.Roles).ThenInclude(role => role.Role)
+                .Where(u => u.Roles.Select(r => r.Role.RoleName).Contains("admin"))
+                .ToListAsync();
+            return View(listAdmin);
+        }
+
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> BlockUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -38,7 +53,7 @@ namespace Project3.Controllers
             return RedirectToAction("listUser");
         }
 
-        //ok
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> UnblockUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -62,19 +77,21 @@ namespace Project3.Controllers
             return View("listUser", users);
         }
 
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> listHobbies()
         {
             var listHobbies = await _context.TypeHobbies.ToListAsync();
             return View(listHobbies);
         }
 
-        //Create hobbies
+        [Authorize(Policy = "AdminOrManager")]
         public IActionResult createHobbies()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> createHobbies(TypeHobbie type)
         {
             if (ModelState.IsValid)
@@ -87,6 +104,7 @@ namespace Project3.Controllers
         }
 
         //edit Hobbies
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> editHobbies(int id)
         {
             var edithob = await _context.TypeHobbies.SingleOrDefaultAsync(u => u.Id == id);
@@ -95,6 +113,7 @@ namespace Project3.Controllers
 
         //Edit hobbies
         [HttpPost]
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> editHobbies(int id, TypeHobbie typename)
         {
             var edit = await _context.TypeHobbies.FirstOrDefaultAsync(c => c.Id == id);
@@ -111,6 +130,7 @@ namespace Project3.Controllers
             return View();
         }
 
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> deleteHobbies(int id)
         {
             var hob = await _context.TypeHobbies.FindAsync(id);
@@ -133,13 +153,14 @@ namespace Project3.Controllers
         }
 
         //role list
+        [Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> listRole()
         {
             var list = await _context.Roles.ToListAsync();
             return View(list);
         }
 
-        //User role
+        [Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> roleDetail(int id)
         {
             var list = await _context.UserRoles.Where(c => c.RoleId == id).Include(c => c.Role).ToListAsync();
@@ -151,7 +172,7 @@ namespace Project3.Controllers
             return View(list);
         }
 
-        //Hien role list
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> ListUserRole()
         {
             BaseMethod.ConvertTempData(TempData, ViewData, "success");
@@ -159,11 +180,13 @@ namespace Project3.Controllers
             return View(users);
         }
 
+        [Authorize(Policy = "ManagerOnly")]
         public IActionResult CreateRole()
         {
             return View();
         }
 
+        [Authorize(Policy = "ManagerOnly")]
         [HttpPost]
         public async Task<IActionResult> CreateRole(Role data)
         {
@@ -173,7 +196,7 @@ namespace Project3.Controllers
             return RedirectToAction("ListRole");
         }
 
-        //Hien trang edit Role
+        [Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> EditRole(int id)
         {
             var role = await _context.Roles.FindAsync(id);
@@ -186,6 +209,7 @@ namespace Project3.Controllers
             return View(role);
         }
 
+        [Authorize(Policy = "ManagerOnly")]
         //method
         [HttpPost]
         public async Task<IActionResult> EditRole(UserEditRoleViewModel viewModel)
@@ -209,12 +233,70 @@ namespace Project3.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> EditUserRole(int id)
         {
+            var listRole = await _context.Roles.Where(r => r.RoleName == "user" || r.RoleName == "writer")
+                .ToListAsync();
             var user = await _context.Users
                 .Include(u => u.Roles)
                 .FirstOrDefaultAsync(u => u.Id == id);
+            ViewData["role"] = listRole;
             return View(user);
+        }
+
+        [Authorize(Policy = "AdminOrManager")]
+        [HttpPost]
+        public async Task<IActionResult> EditUserRole(int id, List<int> role)
+        {
+            var check = await _context.UserRoles.Where(r => r.UserId == id).ToListAsync();
+            if (check != null)
+            {
+                foreach (var i in check)
+                {
+                    _context.Remove(i);
+                }
+            }
+            foreach (var i in role)
+            {
+                _context.Add(new UserRole { UserId = id, RoleId = i });
+            }
+            await _context.SaveChangesAsync();
+            TempData["success"] = "update role successfully";
+            return RedirectToAction("listUser");
+        }
+
+        [Authorize(Policy = "ManagerOnly")]
+        public async Task<IActionResult> EditAdminRole(int id)
+        {
+            var listRole = await _context.Roles
+                .ToListAsync();
+            var user = await _context.Users
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Id == id);
+            ViewData["role"] = listRole;
+            return View(user);
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "ManagerOnly")]
+        public async Task<IActionResult> EditAdminRole(int id, List<int> role)
+        {
+            var check = await _context.UserRoles.Where(r => r.UserId == id).ToListAsync();
+            if (check != null)
+            {
+                foreach (var i in check)
+                {
+                    _context.Remove(i);
+                }
+            }
+            foreach (var i in role)
+            {
+                _context.Add(new UserRole { UserId = id, RoleId = i });
+            }
+            await _context.SaveChangesAsync();
+            TempData["success"] = "update role successfully";
+            return RedirectToAction("ListAdmin");
         }
     }
 }

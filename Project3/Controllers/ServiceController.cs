@@ -23,6 +23,7 @@ namespace Project3.Controllers
                 && s.ServicePrice.ServiceId == int.Parse(serviceId)
                 && s.Status == "Purchased"
                 );
+            var contents = await _context.ServiceContents.Where(s => s.ServiceId == int.Parse(serviceId)).ToListAsync();
 
             if (check != null)
             {
@@ -31,15 +32,14 @@ namespace Project3.Controllers
                 {
                     if (Id == null)
                     {
-                        var contents = await _context.ServiceContents.Where(s => s.ServiceId == int.Parse(serviceId)).ToListAsync();
                         ViewData["serviceid"] = Type;
                         return View(contents);
                     }
                     else
                     {
-                        var unit = _context.ServiceContents.FirstOrDefaultAsync(s => s.Id == Id);
+                        ViewData["id"] = Id;
 
-                        return View(unit);
+                        return View(contents);
                     }
                 }
                 else

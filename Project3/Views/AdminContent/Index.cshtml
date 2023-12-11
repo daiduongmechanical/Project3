@@ -29,24 +29,24 @@
 
 <h1 class="mb-3" style="text-align:center">Content List</h1>
 <div class="container" style="min-height:100vh;background-color:white;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; padding:1rem;padding-bottom:1rem">
-    @if (TempData.ContainsKey("ErrorMessage"))
+    @if (TempData.ContainsKey("SuccessMessage"))
     {
-        <div class="alert alert-danger">
-            @TempData["ErrorMessage"]
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
         </div>
     }
 
 
     
     <a asp-action="Create" class="btn btn-warning mb-2">Create New</a>
-    <table id="room_type" class="table table-hover table-striped table-bordered">
+    <table id="myTable" class="table table-hover table-striped table-bordered">
         <thead class="thead-dark">
             <tr>
                 <th class="text-center">
                     ID
                 </th>
                 <th class="text-center">
-                    Service ID
+                    Service Name
                 </th>
                 <th class="text-center">
                     Image

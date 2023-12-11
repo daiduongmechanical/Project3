@@ -8,6 +8,7 @@ using Project3.Shared;
 namespace Project3.Controllers
 {
     [Route("admin/service/{action}")]
+    [Authorize(Policy = "AdminOrManager")]
     public class AdminServiceController : BaseController
     {
         public AdminServiceController(MyDbContext context) : base(context)
@@ -33,6 +34,8 @@ namespace Project3.Controllers
             {
                 _context.Services.Add(service);
                 _context.SaveChanges();
+
+                TempData["SuccessMessage"] = "Content created successfully";
                 return RedirectToAction("Index");
             }
 
@@ -65,6 +68,7 @@ namespace Project3.Controllers
                 service.UpdatedDate = DateTime.Now; // Update the UpdatedDate property
                 _context.Entry(service).State = EntityState.Modified;
                 _context.SaveChanges();
+                TempData["SuccessMessage"] = "Content edited successfully";
                 return RedirectToAction("Index");
             }
 

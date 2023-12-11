@@ -10,7 +10,7 @@ namespace Project3.Models
         [ForeignKey("Room")]
         public int? RoomId { get; set; }
 
-        public bool IsAdmin { get; set; }
+        public string Role { get; set; }
 
         public bool IsMember { get; set; }
 
@@ -18,7 +18,7 @@ namespace Project3.Models
 
         public RoomMember()
         {
-            IsAdmin = false;
+            Role = "User";
             IsMember = true;
         }
     }

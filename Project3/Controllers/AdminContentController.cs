@@ -15,6 +15,7 @@ namespace Project3.Controllers
         {
         }
 
+        [Authorize(Policy = "AdminOrWriterOrmanager")]
         public async Task<IActionResult> Index()
         {
             var serviceContents = await _context.ServiceContents
@@ -25,6 +26,7 @@ namespace Project3.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminOrWriterOrmanager")]
         public async Task<IActionResult> Create()
         {
             var service = await _context.Services.ToListAsync();
@@ -33,10 +35,9 @@ namespace Project3.Controllers
         }
 
         [HttpPost]
-
+        [Authorize(Policy = "AdminOrWriterOrmanager")]
         public async Task<IActionResult> Create(ContentDto data)
         {
-
             if (ModelState.IsValid)
             {
                 var imageName = await BaseMethod.UploadImage(data.Images);
@@ -53,21 +54,17 @@ namespace Project3.Controllers
 
                     Content = data.Content,
                     Title = data.Title,
-                   
-
                 };
                 _context.Add(content);
-              await  _context.SaveChangesAsync();
-                TempData["success"] = "processed successfully ";
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Content created successfully";
                 return RedirectToAction("Index");
-
-
-
-               
             }
             return View();
         }
-        public IActionResult Edit(int id)
+
+        [Authorize(Policy = "AdminOrWriterOrmanager")]
+        public async Task<IActionResult> Edit(int id)
         {
             var serviceContent = _context.ServiceContents.Find(id);
 
@@ -75,13 +72,14 @@ namespace Project3.Controllers
             {
                 return NotFound();
             }
-
+            var service = await _context.Services.ToListAsync();
+            ViewData["service"] = service;
             return View(serviceContent);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, ServiceContent serviceContent)
+        [Authorize(Policy = "AdminOrWriterOrmanager")]
+        public async Task<IActionResult> Edit(int id, ServiceContent serviceContent, IFormFile? updateImage)
         {
             if (id != serviceContent.Id)
             {
@@ -90,15 +88,36 @@ namespace Project3.Controllers
 
             if (ModelState.IsValid)
             {
-                serviceContent.UpdatedDate = DateTime.Now;
-                _context.Entry(serviceContent).State = EntityState.Modified;
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    if (updateImage != null)
+                    {
+                        var newName = await BaseMethod.UploadImage(updateImage);
+                        BaseMethod.DeleteFile(serviceContent.image);
+                        serviceContent.image = newName.Text;
+                    }
+
+                    serviceContent.UpdatedDate = DateTime.Now;
+                    _context.Entry(serviceContent).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "Content edited successfully";
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // Handle concurrency exception if needed
+                    throw;
+                }
             }
 
+            // If ModelState is not valid, return to the edit view with the existing model
+            var service = await _context.Services.ToListAsync();
+            ViewData["service"] = service;
             return View(serviceContent);
         }
 
+        [Authorize(Policy = "AdminOrManager")]
         public IActionResult Delete(int id)
         {
             var serviceContent = _context.ServiceContents.Find(id);
@@ -112,7 +131,7 @@ namespace Project3.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOrManager")]
         public IActionResult DeleteConfirmed(int id)
         {
             var serviceContent = _context.ServiceContents.Find(id);

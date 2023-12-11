@@ -12,10 +12,8 @@ using DeviceDetectorNET.Cache;
 
 namespace Project3.Shared
 {
-
-
     public static class BaseMethod
-    { 
+    {
         public static async Task<UpImageResult> UploadImage(IFormFile file)
         {
             string[] Types = { ".jpg", ".png", ".jpeg", ".svg" };
@@ -40,12 +38,12 @@ namespace Project3.Shared
             {
                 return new UpImageResult() { Result = false, Text = BaseText.Error };
             }
-
         }
 
         public static bool DeleteFile(string Name)
         {
-            if (Name == "default.jpg") {
+            if (Name == "default.jpg")
+            {
                 return true;
             }
             string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", $"{Name}");
@@ -59,7 +57,7 @@ namespace Project3.Shared
             return false;
         }
 
-        public  static double ConvertToUnixTimestamp(DateTime date)
+        public static double ConvertToUnixTimestamp(DateTime date)
         {
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             TimeSpan diff = date.ToUniversalTime() - origin;
@@ -93,7 +91,10 @@ namespace Project3.Shared
             }
         }
 
-
+        public static string UpperFirst(string text)
+        {
+            var data = text.First().ToString().ToUpper() + text.Substring(1);
+            return data;
+        }
     }
-    
 }

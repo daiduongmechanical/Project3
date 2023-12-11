@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<ServiceContent>
 @{
-    var first = Model.First();
-  var  serviceId = ViewData["serviceid"];
+    var id = ViewData["id"];
+    var first = id == null ? Model.First() : Model.FirstOrDefault(m => m.Id == int.Parse(id.ToString()));
+    var  serviceId = ViewData["serviceid"];
 }
 <link href="~/fe/css/style-service.css" rel="stylesheet">
 <div class="single-news">
@@ -15,24 +16,17 @@
 
                 <div class="sn-container">
                     <div class="sn-img">
-                        <img src="~/images/@first.image" />
+                            <h1 class="sn-title">@first.Title</h1>
+                            <small>@first.CreatedDate</small> <br/>
+                        <img style="width:100% ; aspect-ratio:3/2 " src="~/images/@first.image" />
                     </div>
                     <div class="sn-content">
-                        <h1 class="sn-title">@first.Title</h1>
+                       
                         @Html.Raw(first.Content)
                     </div>
                 </div>
 
-
-
-             
-                          
-
-                       
-                      
                     </div>
-                
-          
 
             }
             <div class="col-lg-4">
@@ -63,9 +57,6 @@
                                 }
 
                             }
-
-                          
-
 
                   
                         </div>

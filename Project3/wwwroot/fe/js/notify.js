@@ -10,21 +10,21 @@ if (btn != null) {
             url: `${baseUrl}/api/user/listfriend/${id}/${roomId}`,
         })
             .done(function (data) {
+                let finalArray = []
                 let form = document.getElementById('data-action');
-                if (data != null) {
-                    let x = data.map((e, i) => `
+
+                let x = data.map((e, i) => `
                 <div class="d-flex align-items-center justify-content-around mb-2" style="border-bottom:0.5px solid gray">
                         <label for="select_${i}" class="d-flex align-items-center">
                             <img src="/images/${e.avatar}" style="width:50px;height:50px; border-radius:50%" />
                             <span class="ml-3 " style="font-size:20px">${e.name}</span>
                         </label>
-                        <input id="select_${i}" name="users[]" value="${e.id}" class="checkbox_size" type="checkbox" />
+                        <input id="select_${i}" style="margin-left:auto" name="users[]" value="${e.id}" class="checkbox_size mr-3" type="checkbox" />
                     </div>
                 `).join(' ');
 
-                    form.innerHTML = x + `<input type="hidden" name="groupId"  value="${roomId}"/> <input type="submit" class="btn btn-primary" value="Add"/>`
-                }
-            });
+                form.innerHTML = x + `<input type = "hidden" name = "groupId"  value = "${roomId}" /> <input type="submit" class="btn btn-primary" value="Add" />`
+            })
     })
 }
 

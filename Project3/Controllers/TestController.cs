@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project3.Data;
+using Project3.Dtos;
 using Project3.Shared;
 
 namespace Project3.Controllers
@@ -12,16 +13,10 @@ namespace Project3.Controllers
         {
         }
 
-        [Route("/test/chat/{name}")]
-        public async Task<IActionResult> Index(string name)
+        [Route("test/{id}/{room}")]
+        public async Task<IActionResult> GetListFriend(int id, string room)
         {
-            var id = name.Split("_s")[1];
-            var data = await _context.RoomMessages.
-                Include(m => m.User).
-                   Where(m => m.RoomId == int.Parse(id))
-                   .OrderByDescending(m => m.CreatedDate).FirstAsync();
-
-            return Ok(data);
+            return Ok();
         }
     }
 }

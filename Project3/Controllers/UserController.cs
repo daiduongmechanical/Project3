@@ -9,6 +9,7 @@ using Project3.Mail;
 using Project3.Models;
 using Project3.Shared;
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 
@@ -35,12 +36,23 @@ namespace Project3.Controllers
         public async Task<IActionResult> GetListFriend(int id, string room)
         {
             var roomId = room.Split("_s")[1];
-            var roomData = await _context.RoomMembers.Where(r => r.RoomId == int.Parse(roomId)).ToListAsync();
+            var roomData = await _context.RoomMembers
+                .Include(r => r.user)
+                .Where(r => r.RoomId == int.Parse(roomId))
+                .Select(r => new FriendDto
+                {
+                    Avatar = r.user.Avatar,
+                    Name = r.user.UserName,
+                    id = r.user.Id,
+                    IsSender = r.IsMember,
+
+                    Description = r.user.Description
+                }).ToListAsync();
 
             var result = await _context.Friends
                 .Where(f => f.SendId == id
                 && f.status == "Accept"
-               && !roomData.Select(r => r.MemberId).Contains(f.RecieveId))
+               )
                 .Join(
                 _context.Users,
                 f => f.RecieveId,
@@ -54,8 +66,7 @@ namespace Project3.Controllers
                 }
                 ).Union(
                  _context.Friends.Where(f => f.RecieveId == id
-                 && f.status == "Accept"
-                 && !roomData.Select(r => r.MemberId).Contains(f.RecieveId))
+                 && f.status == "Accept")
                 .Join(
                 _context.Users,
                 f => f.SendId,
@@ -69,6 +80,8 @@ namespace Project3.Controllers
                 }
                 )
                 ).ToListAsync();
+
+            result.RemoveAll(r => roomData.Any(d => d.id == r.id && d.IsSender));
             return Ok(result);
         }
 
@@ -195,6 +208,14 @@ namespace Project3.Controllers
                     ViewData["error"] = "This phone was registed, please cheking again, or use orther phone";
                     return View();
                 }
+                var CheckName = _context.Users
+                    .FirstOrDefaultAsync(u => u.UserName.ToLower() == data.Name.ToLower());
+                if (check != null)
+                {
+                    ViewData["error"] = "This phone was used, please use another name";
+                    return View();
+                }
+
                 var user = new User(data);
 
                 await _context.AddAsync(user);
@@ -249,13 +270,13 @@ namespace Project3.Controllers
 
                 if (check == null)
                 {
-                    ViewData["Error"] = "Tên đăng nhập hoặc mật khẩu không đúng vui lòng kiểm tra lại";
+                    ViewData["Error"] = "Your phone is wrong. Please checking again";
                     return View("Login");
                 }
                 //check password is correct
                 else if (!BCrypt.Net.BCrypt.Verify(data.Password, check.Password))
                 {
-                    ViewData["Error"] = "Tên đăng nhập hoặc mật khẩu không đúng vui lòng kiểm tra lại";
+                    ViewData["Error"] = "Your Password is wrong Please checking again";
                     return View("Login");
                 }
                 else if (!check.Verified)
@@ -271,7 +292,16 @@ namespace Project3.Controllers
                 else
                 {
                     await this.Handle(check, data.Device_id);
-                    return RedirectToAction("Index", "Home");
+                    if (check.Roles.Where(r => r.Role.RoleName == "admin"
+                    || r.Role.RoleName == "writer"
+                    || r.Role.RoleName == "manager").ToList() != null)
+                    {
+                        return RedirectToAction("Admin", "Home");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
             }
             return View("Login");
@@ -324,13 +354,106 @@ namespace Project3.Controllers
         public void SendMessage(string phone, string code)
         {
             var accountSid = "ACc0caca8533ac9ab66cabf5bf31e6cd3c";
-            var authToken = "a07c4ca12eb5461e35e6a810d897f9b6";
+            var authToken = "a48f320bee41bf408399de2c929445c6";
             TwilioClient.Init(accountSid, authToken);
             var message = MessageResource.Create(
             body: $"Your verify code : {code}",
             from: new Twilio.Types.PhoneNumber("+13348010639"),
             to: new Twilio.Types.PhoneNumber(phone)
         );
+        }
+
+        //forgot password
+        [HttpGet]
+        [Route("ForgotPassword")]
+        public IActionResult ForgotPassword()
+        {
+            return View("ForgotPassword");
+        }
+
+        [HttpPost]
+        [Route("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                if (user != null)
+                {
+                    // Tao code
+                    user.ResetToken = Guid.NewGuid().ToString();
+                    user.ResetTokenExpiryTime = DateTime.UtcNow.AddHours(1);
+
+                    await _context.SaveChangesAsync();
+
+                    // send link
+                    var callbackUrl = Url.Action("ConfirmResetPassword", null, new { userId = user.Id, token = user.ResetToken }, protocol: HttpContext.Request.Scheme); ;
+                    var emailMessage = new MailData
+                    {
+                        EmailTo = user.Email,
+                        EmailSubject = "Reset Password",
+                        EmailBody = $"Please reset your password by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
+                    };
+
+                    _mail.SendMail(emailMessage);
+
+                    TempData["success"] = "Reset password link has been sent to your email.";
+                    return RedirectToAction("ForgotPassword");
+                }
+
+                ModelState.AddModelError(string.Empty, "User with this email does not exist.");
+            }
+
+            return View("ForgotPassword", model);
+        }
+
+        //confirm
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("ConfirmResetPassword")]
+        public IActionResult ConfirmResetPassword(string userId, string token)
+        {
+            // Check user id vs token
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                return RedirectToAction("Error");
+            }
+
+            ViewData["UserId"] = userId;
+            ViewData["Token"] = token;
+
+            return View("ConfirmResetPassword");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ConfirmResetPassword")]
+        public async Task<IActionResult> ConfirmResetPassword(string userId, string token, string newPassword)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                return RedirectToAction("Error");
+            }
+
+            // Lấy thông tin user từ userId
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+
+            // Kiểm tra user và token có hợp lệ
+            if (user != null && user.ResetToken == token && user.ResetTokenExpiryTime > DateTime.UtcNow)
+            {
+                user.ResetToken = null;
+                user.ResetTokenExpiryTime = null;
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+                await _context.SaveChangesAsync();
+
+                TempData["success"] = "Password reset successfully. You can now log in with your new password.";
+
+                return RedirectToAction("Login");
+            }
+
+            return RedirectToAction("Error");
         }
     }
 }

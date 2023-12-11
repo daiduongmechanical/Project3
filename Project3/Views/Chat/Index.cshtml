@@ -18,6 +18,40 @@
 
 }
 
+<style>
+    .chat-back-null{
+        background-image: url(/images/back.jpg)
+    }
+
+</style>
+
+@* model show addd group *@
+
+<div class="modal fade" id="model-create-group" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create Group</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form asp-action="AddGroup" id="form-add-group" method="post" style="display:none">
+                    <input type="hidden" class="form-control" name="userid" value="@User.FindFirst("id").Value" placeholder="Search...">
+                    <input type="text" name="name" class="form-control" placeholder="Group name" />
+                    <button class="btn btn-info">Create</button>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
 <div class="">
     <div class="row clearfix">
         <div class="col-lg-12">
@@ -30,14 +64,13 @@
                         </div>
                         
                         <input type="text" class="form-control" placeholder="Search...">
-                        <i class="fas fa-plus-square ml-2 btn-add-group" style="font-size:20px;  padding-top:8px;cursor:pointer"></i>
+                        <i id="btn-add-group"  
+                           data-toggle="modal"
+                           data-target="#model-create-group"
+                        class="fas fa-plus-square ml-2 btn-add-group" style="font-size:20px;  padding-top:8px;cursor:pointer"></i>
                     </div>
                  
-                    <form asp-action="AddGroup" method="post">
-                        <input type="hidden" class="form-control" name="userid" value="@User.FindFirst("id").Value" placeholder="Search...">
-                        <input type="text" name="name" class="form-control" placeholder="Group name"/>
-                        <button class="btn btn-info">Create</button>
-                    </form>
+                   
                     
                     <ul class="list-unstyled chat-list mt-2 mb-0">
                         @if (Model != null)
@@ -93,7 +126,7 @@
                     @await Component.InvokeAsync(ViewData["component"].ToString(),new{name=ViewData["user"]})
                   
                 }else{
-                    <div class="chat" style="height:90vh">   </div>
+                    <div class="chat chat-back-null"  style="height:90vh">   </div>
                 }
 
 
@@ -101,3 +134,19 @@
         </div>
     </div>
 </div>
+
+
+<script src="https://unpkg.com/%40popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script>
+    tippy('#Create-group', {
+        content: 'Create a  group',
+    });
+
+
+    let btn_add_group = document.getElementById("btn-add-group");
+    btn_add_group.addEventListener('click', (e) => {
+        document.getElementById("form-add-group").style.display = "block";
+    })
+
+</script>

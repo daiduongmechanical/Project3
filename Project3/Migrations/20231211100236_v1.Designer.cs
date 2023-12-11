@@ -12,7 +12,7 @@ using Project3.Data;
 namespace Project3.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20231204065250_v1")]
+    [Migration("20231211100236_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -181,9 +181,30 @@ namespace Project3.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 12, 4, 13, 52, 49, 956, DateTimeKind.Local).AddTicks(1489),
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(694),
                             RoleName = "user",
-                            UpdatedDate = new DateTime(2023, 12, 4, 13, 52, 49, 956, DateTimeKind.Local).AddTicks(1476)
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(679)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(705),
+                            RoleName = "writer",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(705)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(713),
+                            RoleName = "admin",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(712)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(721),
+                            RoleName = "manager",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(715)
                         });
                 });
 
@@ -220,11 +241,15 @@ namespace Project3.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsAdmin")
+                    b.Property<bool>("IsMember")
                         .HasColumnType("bit");
 
                     b.Property<int?>("MemberId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("RoomId")
                         .HasColumnType("int");
@@ -232,14 +257,11 @@ namespace Project3.Migrations
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomId");
+                    b.HasIndex("MemberId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("RoomId");
 
                     b.ToTable("RoomMembers");
                 });
@@ -261,9 +283,6 @@ namespace Project3.Migrations
                     b.Property<int?>("RoomId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RoomId1")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
@@ -274,7 +293,7 @@ namespace Project3.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.HasIndex("RoomId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("RoomMessages");
                 });
@@ -317,15 +336,22 @@ namespace Project3.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Service_Id")
+                    b.Property<int>("ServiceId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("image")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Service_Id");
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("ServiceContents");
                 });
@@ -347,7 +373,7 @@ namespace Project3.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<int>("Service_Id")
+                    b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedDate")
@@ -355,9 +381,9 @@ namespace Project3.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Service_Id");
+                    b.HasIndex("ServiceId");
 
-                    b.ToTable("ServicesPrice");
+                    b.ToTable("ServicePrice");
                 });
 
             modelBuilder.Entity("Project3.Models.ServiceRegistered", b =>
@@ -371,7 +397,7 @@ namespace Project3.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Service_Price_Id")
+                    b.Property<int>("Service_PriceId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -381,14 +407,14 @@ namespace Project3.Migrations
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("User_Id")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Service_Price_Id");
+                    b.HasIndex("Service_PriceId");
 
-                    b.HasIndex("User_Id");
+                    b.HasIndex("UserId");
 
                     b.ToTable("ServiceRegistereds");
                 });
@@ -441,6 +467,12 @@ namespace Project3.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NeddLogout")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -448,6 +480,12 @@ namespace Project3.Migrations
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResetTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -461,6 +499,83 @@ namespace Project3.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Avatar = "default.jpg",
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 643, DateTimeKind.Local).AddTicks(5034),
+                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "vainhoo@gmail.com",
+                            IsBlocked = false,
+                            NeddLogout = false,
+                            Password = "$2a$11$bIXdrfHXtXvcoBGadqizFOCEVWOVuIWv291xV5Wfcu6qUSZxmaEb.",
+                            Phone = "+84234456678",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 643, DateTimeKind.Local).AddTicks(5027),
+                            UserName = "xhaka",
+                            Verified = true
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Avatar = "default.jpg",
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 883, DateTimeKind.Local).AddTicks(8013),
+                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "vainhoo@gmail.com",
+                            IsBlocked = false,
+                            NeddLogout = false,
+                            Password = "$2a$11$Aj/TdD8NyPfQEBPA.tWtXOVMu4gPzFREil205twnwrhIF2UWdunT6",
+                            Phone = "+8477885566",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 883, DateTimeKind.Local).AddTicks(7981),
+                            UserName = "saka",
+                            Verified = true
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Avatar = "default.jpg",
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 119, DateTimeKind.Local).AddTicks(7301),
+                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "vainhoo@gmail.com",
+                            IsBlocked = false,
+                            NeddLogout = false,
+                            Password = "$2a$11$Zl/LyrJMkcrzhjGyxMBrCu07lrUDcekIKv7U8cwst5p.JBlIsql/6",
+                            Phone = "+84987765543",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 119, DateTimeKind.Local).AddTicks(7288),
+                            UserName = "rose",
+                            Verified = true
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Avatar = "default.jpg",
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 362, DateTimeKind.Local).AddTicks(5309),
+                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "vainhoo@gmail.com",
+                            IsBlocked = false,
+                            NeddLogout = false,
+                            Password = "$2a$11$AEESQh4DgkWl/p9UjW8/vOjxNAea8UiT3wJymqEL1Ovit.GE7kcVq",
+                            Phone = "+8422665544",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 362, DateTimeKind.Local).AddTicks(5289),
+                            UserName = "atetar",
+                            Verified = true
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Avatar = "default.jpg",
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 603, DateTimeKind.Local).AddTicks(6456),
+                            Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "vainhoo@gmail.com",
+                            IsBlocked = false,
+                            NeddLogout = false,
+                            Password = "$2a$11$CHySSpJd/OD52o87dZhsqeeCa2EkGDYceaXbhuxrAeUxovlQXbmuS",
+                            Phone = "+84987865454",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 603, DateTimeKind.Local).AddTicks(6449),
+                            UserName = "enketia",
+                            Verified = true
+                        });
                 });
 
             modelBuilder.Entity("Project3.Models.UserRole", b =>
@@ -490,6 +605,64 @@ namespace Project3.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8320),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8309),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8337),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8337),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8339),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8339),
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8341),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8340),
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8342),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8342),
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8346),
+                            RoleId = 4,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8345),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8347),
+                            RoleId = 3,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8347),
+                            UserId = 3
+                        });
                 });
 
             modelBuilder.Entity("Project3.Models.Verified", b =>
@@ -564,24 +737,26 @@ namespace Project3.Migrations
 
             modelBuilder.Entity("Project3.Models.RoomMember", b =>
                 {
+                    b.HasOne("Project3.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("MemberId");
+
                     b.HasOne("Project3.Models.Room", null)
                         .WithMany("members")
                         .HasForeignKey("RoomId");
 
-                    b.HasOne("Project3.Models.User", null)
-                        .WithMany("Rooms")
-                        .HasForeignKey("UserId");
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Project3.Models.RoomMessage", b =>
                 {
-                    b.HasOne("Project3.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("RoomId");
-
                     b.HasOne("Project3.Models.Room", null)
                         .WithMany("Messages")
-                        .HasForeignKey("RoomId1");
+                        .HasForeignKey("RoomId");
+
+                    b.HasOne("Project3.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -590,7 +765,7 @@ namespace Project3.Migrations
                 {
                     b.HasOne("Project3.Models.Service", "Service")
                         .WithMany("ServiceContents")
-                        .HasForeignKey("Service_Id")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -601,7 +776,7 @@ namespace Project3.Migrations
                 {
                     b.HasOne("Project3.Models.Service", "Service")
                         .WithMany("ServicePrices")
-                        .HasForeignKey("Service_Id")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -611,14 +786,14 @@ namespace Project3.Migrations
             modelBuilder.Entity("Project3.Models.ServiceRegistered", b =>
                 {
                     b.HasOne("Project3.Models.ServicePrice", "ServicePrice")
-                        .WithMany("Registered")
-                        .HasForeignKey("Service_Price_Id")
+                        .WithMany()
+                        .HasForeignKey("Service_PriceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project3.Models.User", "User")
                         .WithMany("Registered")
-                        .HasForeignKey("User_Id")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -658,11 +833,6 @@ namespace Project3.Migrations
                     b.Navigation("ServicePrices");
                 });
 
-            modelBuilder.Entity("Project3.Models.ServicePrice", b =>
-                {
-                    b.Navigation("Registered");
-                });
-
             modelBuilder.Entity("Project3.Models.User", b =>
                 {
                     b.Navigation("Devices");
@@ -676,8 +846,6 @@ namespace Project3.Migrations
                     b.Navigation("Registered");
 
                     b.Navigation("Roles");
-
-                    b.Navigation("Rooms");
                 });
 #pragma warning restore 612, 618
         }

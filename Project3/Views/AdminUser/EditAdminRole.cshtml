@@ -1,13 +1,13 @@
 ﻿@model User
 
 @{
-    ViewData["Title"] = "editHobbies";
+    ViewData["Title"] = "Edit admin role";
     Layout = "~/Views/AdminLayout/_Layout.cshtml";
     var listRole = ViewData["role"] as List<Role>;
 }
 
 
-<h1>Edit User Role</h1>
+<h1>Edit Admin Role</h1>
 
 
 <hr />
@@ -19,26 +19,26 @@
             <div class="form-group">
                 <label asp-for="UserName" class="control-label"></label>
                 <input value="@Model.UserName" class="form-control" readonly />
-                <input name="id" value="@Model.Id"  class="form-control" type="hidden" />
-           
+                <input name="id" value="@Model.Id" class="form-control" type="hidden" />
+
             </div>
 
             <div class="form-group col-md-4" style="margin-bottom:0; width:100%">
                 <label>User role</label>
-              
-                <select class="form-control js-example-basic-multiple" style="width:100%"  name="role[]" multiple="multiple"w>
+
+                <select class="form-control js-example-basic-multiple" style="width:100%" name="role[]" multiple="multiple" w>
                     @if (listRole != null)
                     {
                         foreach (var i in listRole)
                         {
-                            var select = Model.Roles.FirstOrDefault(r => r.RoleId == i.Id) == null ? false :true ;
+                            var select = Model.Roles.FirstOrDefault(r => r.RoleId == i.Id) == null ? false : true;
                             <option value="@i.Id" selected="@select">@i.RoleName</option>
                         }
                     }
                 </select>
             </div>
 
-         
+
 
             <input type="hidden" asp-for="Id" />
 
@@ -51,16 +51,16 @@
     </div>
 </div>
 
-    <div>
-        <a asp-action="Index">Back to List</a>
-    </div>
-
-  
-            <script>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 
 
-        window.addEventListener("load", () => {
-          
-            $('.js-example-basic-multiple').select2();
-        });
-            </script>
+<script>
+
+
+    window.addEventListener("load", () => {
+
+        $('.js-example-basic-multiple').select2();
+    });
+</script>

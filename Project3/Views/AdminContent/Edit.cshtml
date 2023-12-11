@@ -2,6 +2,8 @@
 
 @{
     Layout = BaseText.AdminLayout;
+    var service = ViewData["service"] as List<Service>;
+
 }
 
 
@@ -12,16 +14,33 @@
             <a asp-action="Index" class="btn btn-secondary">Back to List</a>
         </div>
     </div>
-    <div bg bg-danger" style="width:100%">
-        <form asp-action="Edit">
+    <div container-fluid>
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input hidden asp-for="Id" value="@Model.Id" />
             <div class="form-group">
-                <label asp-for="ServiceId" class="control-label"></label>
-                <input asp-for="ServiceId" value="@Model.ServiceId" readonly class="form-control" />
-                <span asp-validation-for="ServiceId" class="text-danger"></span>
+                <label asp-for="ServiceId">ServiceId</label>
+                @if (service != null)
+                {
+                    <select required asp-for="ServiceId" class="form-control">
+                        @foreach (var i in service)
+                        {
+                            <option value="@i.Id">@i.Name</option>
+                        }
+                    </select>
+                }
             </div>
-
+               <div class="form-group">
+                    <label >Images</label>
+                    <input type="file" name="updateImage" class="form-control"  />
+                
+                </div>
+            <input type="hidden" asp-for="image" value="@Model.image" class="form-control" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <textarea asp-for="Title" value="@Model.Title" class="form-control "></textarea>
+                 <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Content" class="control-label"></label>
                 <textarea style="width:80vw; height:100px" asp-for="Content"

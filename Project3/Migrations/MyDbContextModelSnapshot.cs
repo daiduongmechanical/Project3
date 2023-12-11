@@ -178,9 +178,30 @@ namespace Project3.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 777, DateTimeKind.Local).AddTicks(6430),
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(694),
                             RoleName = "user",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 777, DateTimeKind.Local).AddTicks(6414)
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(679)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(705),
+                            RoleName = "writer",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(705)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(713),
+                            RoleName = "admin",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(712)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(721),
+                            RoleName = "manager",
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 642, DateTimeKind.Local).AddTicks(715)
                         });
                 });
 
@@ -217,14 +238,15 @@ namespace Project3.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsMember")
                         .HasColumnType("bit");
 
                     b.Property<int?>("MemberId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("RoomId")
                         .HasColumnType("int");
@@ -445,6 +467,9 @@ namespace Project3.Migrations
                     b.Property<bool>("IsBlocked")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("NeddLogout")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -452,6 +477,12 @@ namespace Project3.Migrations
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResetTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -469,71 +500,76 @@ namespace Project3.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 5,
+                            Id = 1,
                             Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 778, DateTimeKind.Local).AddTicks(7955),
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 643, DateTimeKind.Local).AddTicks(5034),
                             Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vainhoo@gmail.com",
                             IsBlocked = false,
-                            Password = "$2a$11$zBCCImjNJrZiiX6k5qPEgu2yU9wlRJOs7h.p8Lg7qCz6/oc6/HPHu",
+                            NeddLogout = false,
+                            Password = "$2a$11$bIXdrfHXtXvcoBGadqizFOCEVWOVuIWv291xV5Wfcu6qUSZxmaEb.",
                             Phone = "+84234456678",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 778, DateTimeKind.Local).AddTicks(7949),
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 643, DateTimeKind.Local).AddTicks(5027),
                             UserName = "xhaka",
                             Verified = true
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 2,
                             Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 981, DateTimeKind.Local).AddTicks(5776),
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 883, DateTimeKind.Local).AddTicks(8013),
                             Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vainhoo@gmail.com",
                             IsBlocked = false,
-                            Password = "$2a$11$hmX3qOT0LHd5UCpA6m588ObGV4/LU3n.OVYet5O3RI7v7p97uc2UC",
+                            NeddLogout = false,
+                            Password = "$2a$11$Aj/TdD8NyPfQEBPA.tWtXOVMu4gPzFREil205twnwrhIF2UWdunT6",
                             Phone = "+8477885566",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 41, 981, DateTimeKind.Local).AddTicks(5755),
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 34, 883, DateTimeKind.Local).AddTicks(7981),
                             UserName = "saka",
                             Verified = true
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 3,
                             Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 183, DateTimeKind.Local).AddTicks(840),
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 119, DateTimeKind.Local).AddTicks(7301),
                             Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vainhoo@gmail.com",
                             IsBlocked = false,
-                            Password = "$2a$11$tG71xIqt1ADXcQg3hqW8OeLS7cqF8HG7ybQhwIdeYLszftZWsO8F.",
+                            NeddLogout = false,
+                            Password = "$2a$11$Zl/LyrJMkcrzhjGyxMBrCu07lrUDcekIKv7U8cwst5p.JBlIsql/6",
                             Phone = "+84987765543",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 183, DateTimeKind.Local).AddTicks(812),
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 119, DateTimeKind.Local).AddTicks(7288),
                             UserName = "rose",
                             Verified = true
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 4,
                             Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 377, DateTimeKind.Local).AddTicks(2923),
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 362, DateTimeKind.Local).AddTicks(5309),
                             Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vainhoo@gmail.com",
                             IsBlocked = false,
-                            Password = "$2a$11$ShC5/ojREsfdduaad3EtJue0z3X1HuMkNjgaRNAKQwvXGEGwljlae",
+                            NeddLogout = false,
+                            Password = "$2a$11$AEESQh4DgkWl/p9UjW8/vOjxNAea8UiT3wJymqEL1Ovit.GE7kcVq",
                             Phone = "+8422665544",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 377, DateTimeKind.Local).AddTicks(2905),
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 362, DateTimeKind.Local).AddTicks(5289),
                             UserName = "atetar",
                             Verified = true
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 5,
                             Avatar = "default.jpg",
-                            CreatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 564, DateTimeKind.Local).AddTicks(6929),
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 603, DateTimeKind.Local).AddTicks(6456),
                             Dob = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vainhoo@gmail.com",
                             IsBlocked = false,
-                            Password = "$2a$11$BL2bDiW/XOe08E.3qTXMXOP7LmUnp04LzhRv.7pVqA6qxB/BcQfBC",
+                            NeddLogout = false,
+                            Password = "$2a$11$CHySSpJd/OD52o87dZhsqeeCa2EkGDYceaXbhuxrAeUxovlQXbmuS",
                             Phone = "+84987865454",
-                            UpdatedDate = new DateTime(2023, 12, 9, 9, 2, 42, 564, DateTimeKind.Local).AddTicks(6900),
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 603, DateTimeKind.Local).AddTicks(6449),
                             UserName = "enketia",
                             Verified = true
                         });
@@ -566,6 +602,64 @@ namespace Project3.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8320),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8309),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8337),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8337),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8339),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8339),
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8341),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8340),
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8342),
+                            RoleId = 1,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8342),
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8346),
+                            RoleId = 4,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8345),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8347),
+                            RoleId = 3,
+                            UpdatedDate = new DateTime(2023, 12, 11, 17, 2, 35, 859, DateTimeKind.Local).AddTicks(8347),
+                            UserId = 3
+                        });
                 });
 
             modelBuilder.Entity("Project3.Models.Verified", b =>

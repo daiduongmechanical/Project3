@@ -109,7 +109,10 @@ connection.on("ReceiveMessageGroup", (name, avatar, message, GroupId) => {
 
                                             </div>
                                             <img style="width:40px;height:40px; border-radius:50%" src="/images/${avatar}" alt="avatar">
-                                            <div class="message my-message">${message}</div>
+                                            <div class="message my-message d-flex flex-column align-items-lg-start pr-2" style="width:fit-content ; max-width:30vw" >
+                                        <small>${name}</small>
+                                        <span>${message}</span>
+                                        </div>
                                         </li> `
 
     li.innerHTML = dataAddText

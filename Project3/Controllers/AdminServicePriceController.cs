@@ -5,9 +5,10 @@ using Project3.Data;
 using Project3.Models;
 using Project3.Shared;
 
-namespace Project3.Controllers
+namespace Project3.AdminOrManager
 {
     [Route("admin/price/{action}")]
+    [Authorize(Policy = "AdminOrManager")]
     public class AdminServicePriceController : BaseController
     {
         public AdminServicePriceController(MyDbContext context) : base(context)
@@ -34,6 +35,8 @@ namespace Project3.Controllers
             {
                 _context.ServicePrice.Add(servicePrice);
                 await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Content created successfully";
                 return RedirectToAction("Index");
             }
 
@@ -66,6 +69,8 @@ namespace Project3.Controllers
                 servicePrice.UpdatedDate = DateTime.Now;
                 _context.Entry(servicePrice).State = EntityState.Modified;
                 _context.SaveChanges();
+
+                TempData["SuccessMessage"] = "Content edited successfully";
                 return RedirectToAction("Index");
             }
 

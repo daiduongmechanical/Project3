@@ -4,6 +4,18 @@
     Layout = "~/Views/AdminLayout/_Layout.cshtml";
 }
 
+@if (ViewData.ContainsKey("success"))
+{
+    <p class="alert alert-warning d-none  " id="success-notify-toast" role="alert">@ViewData["success"]</p>
+
+}
+
+@if (ViewData.ContainsKey("error"))
+{
+    <p class="alert alert-warning d-none " id="error-notify-toast" role="alert">@ViewData["success"]</p>
+
+}
+
 <h2>User List</h2>
 
 <table class="table">
@@ -32,4 +44,6 @@
         }
     </tbody>
 </table>
+
+
 

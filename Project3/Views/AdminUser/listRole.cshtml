@@ -5,7 +5,7 @@
     Layout = "~/Views/AdminLayout/_Layout.cshtml";
 }
 
-<h1>listRole</h1>
+@* <h1>listRole</h1>
 
 <p>
     <a asp-action="CreateRole">Create New role</a>
@@ -34,16 +34,54 @@
             <td>
                 @Html.DisplayFor(modelItem => item.RoleName)
             </td>
-            @* <td>
-                @Html.DisplayFor(modelItem => item.Roles)
-            </td> *@
             
             <td>
                     <a asp-action="EditRole" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="roleDetail" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }
     </tbody>
-</table>
+</table> *@
+
+
+
+
+<h1 class="mb-3" style="text-align:center">Role List</h1>
+<div class="container" style="min-height:100vh;background-color:white;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; padding:1rem;padding-bottom:1rem">
+    @if (TempData.ContainsKey("ErrorMessage"))
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+
+
+    <a asp-action="CreateRole" class="btn btn-warning mb-2">Create New</a>
+    <table id="myTable" class="table table-hover table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th class="text-center">Role Name</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+
+
+                foreach (var price in Model)
+                {
+                    <tr>
+                        <td class="text-center">@price.RoleName</td>
+                        <td class="text-center">
+                            <a asp-action="EditRole" asp-route-id="@price.Id">Edit</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

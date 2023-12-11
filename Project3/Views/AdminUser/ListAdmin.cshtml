@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Project3.Models.User>
 
 @{
-    ViewData["Title"] = "listUser";
+    ViewData["Title"] = "listAdmin";
     Layout = "~/Views/AdminLayout/_Layout.cshtml";
 }
 
@@ -10,7 +10,7 @@
 
 
 @* new *@
-<h1 class="mb-3" style="text-align:center">User List</h1>
+<h1 class="mb-3" style="text-align:center">Admin List</h1>
 <div class="container" style="min-height:100vh;background-color:white;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; padding:1rem;padding-bottom:1rem">
     @if (TempData.ContainsKey("ErrorMessage"))
     {
@@ -21,7 +21,7 @@
 
 
 
-    <a asp-action="Create" class="btn btn-warning mb-2">Create New</a>
+   
     <table id="myTable" class="table table-hover table-striped table-bordered">
         <thead class="thead-dark">
             <tr>
@@ -35,24 +35,24 @@
             </tr>
         </thead>
         <tbody>
-            @if(Model != null)
+            @if (Model != null)
             {
 
 
                 foreach (var price in Model)
                 {
                     <tr class="text-center">
-                    <td>@price.UserName</td>
-                    <td>@price.Email</td>
-                    <td>@price.Address</td>
-                    <td>@price.Verified</td>
-                    <td>@price.Phone</td>
+                        <td>@price.UserName</td>
+                        <td>@price.Email</td>
+                        <td>@price.Address</td>
+                        <td>@price.Verified</td>
+                        <td>@price.Phone</td>
                         <td>
                             @if (price.Roles != null)
                             {
                                 foreach (var r in price.Roles)
                                 {
-                                    <span style="border :0.5px solid gray; margin-right:5px ;padding:2px 8px; box-sizing:border-box" >@r.Role.RoleName</span>
+                                    <span style="border :0.5px solid gray; margin-right:5px ;padding:2px 8px; box-sizing:border-box">@r.Role.RoleName</span>
                                 }
                             }
                         </td>
@@ -66,10 +66,10 @@
                                 <a asp-action="UnblockUser" asp-route-id="@price.Id" class="btn btn-success">Unblock</a>
                             }
 
-                            <a asp-action="EditUserRole" asp-route-id="@price.Id" class="btn btn-success">EditRole</a>
+                            <a asp-action="EditAdminRole" asp-route-id="@price.Id" class="btn btn-success">EditRole</a>
                         </td>
-                </tr>
-}
+                    </tr>
+                }
             }
         </tbody>
     </table>
@@ -85,3 +85,4 @@
         return true;
     }
 </script> *@
+

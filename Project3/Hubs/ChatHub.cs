@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project3.Data;
 using Project3.Dtos;
-using Project3.Migrations;
+
 using Project3.Models;
 using System.Collections.Concurrent;
 using System.Security.Claims;
@@ -45,11 +45,11 @@ namespace Project3.Hubs
                 var checkUser = await _context.Users.FindAsync(int.Parse(user));
 
                 // newlest group message
-                var NewMessageGroup = await _context.RoomMessages.
-                   Where(m => m.RoomId == RoomMess.RoomId)
-                   .OrderByDescending(m => m.CreatedDate).FirstAsync();
+                var NewMessageGroup = await _context.RoomMessages
+                    .Where(m => m.RoomId == RoomMess.RoomId)
+                   .OrderByDescending(m => m.CreatedDate).FirstOrDefaultAsync();
 
-                _context.Add(RoomMess);
+                _context.RoomMessages.Add(RoomMess);
                 await _context.SaveChangesAsync();
 
                 var senderConnectionId = Context.ConnectionId;

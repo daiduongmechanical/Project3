@@ -19,6 +19,18 @@
     <None Include="Views\AdminService\Delete.cshtml" />
     <None Include="Views\AdminService\Edit.cshtml" />
     <None Include="Views\AdminService\Index.cshtml" />
+    <None Include="Views\AdminUser\createHobbies.cshtml" />
+    <None Include="Views\AdminUser\CreateRole.cshtml" />
+    <None Include="Views\AdminUser\editHobbies.cshtml" />
+    <None Include="Views\AdminUser\EditRole.cshtml" />
+    <None Include="Views\AdminUser\EditUserRole.cshtml" />
+    <None Include="Views\AdminUser\Index.cshtml" />
+    <None Include="Views\AdminUser\listHobbies.cshtml" />
+    <None Include="Views\AdminUser\listRole.cshtml" />
+    <None Include="Views\AdminUser\listUser.cshtml" />
+    <None Include="Views\AdminUser\ListUserRole.cshtml" />
+    <None Include="Views\AdminUser\roleDetail.cshtml" />
+    <None Include="Views\Service\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
